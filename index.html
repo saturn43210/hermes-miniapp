@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hermes Agent — Mini App</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #222240;
+            --accent-cyan: #00d4ff;
+            --accent-gold: #f5a623;
+            --accent-purple: #a855f7;
+            --accent-green: #00ff88;
+            --accent-red: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #8888aa;
+            --text-muted: #555577;
+            --border: #2a2a3e;
+            --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.3);
+            --glow-gold: 0 0 20px rgba(245, 166, 35, 0.3);
+            --glow-purple: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Background Animation ─── */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: floatGlow 20s ease-in-out infinite;
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-2%, -2%) rotate(5deg); }
+        }
+
+        /* ─── Container ─── */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        /* ─── Header ─── */
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+
+        .logo-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+
+        /* ─── Status Bar ─── */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+
+        /* ─── Section Title ─── */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0 12px;
+            padding: 0 4px;
+        }
+
+        .section-title h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-title .line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to left, var(--border), transparent);
+        }
+
+        /* ─── Cards Grid ─── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover::before,
+        .card:active::before {
+            opacity: 1;
+        }
+
+        .card:active {
+            transform: scale(0.97);
+            background: var(--bg-card-hover);
+        }
+
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .card-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .badge-cyan { background: rgba(0, 212, 255, 0.2); color: var(--accent-cyan); }
+        .badge-gold { background: rgba(245, 166, 35, 0.2); color: var(--accent-gold); }
+        .badge-purple { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+        .badge-green { background: rgba(0, 255, 136, 0.2); color: var(--accent-green); }
+
+        /* ─── Full Width Card ─── */
+        .card-full {
+            grid-column: 1 / -1;
+        }
+
+        /* ─── Stats Row ─── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.cyan { color: var(--accent-cyan); }
+        .stat-value.gold { color: var(--accent-gold); }
+        .stat-value.purple { color: var(--accent-purple); }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ─── Menu Items ─── */
+        .menu-list {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:active {
+            background: var(--bg-card-hover);
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .menu-icon.cyan { background: rgba(0, 212, 255, 0.1); }
+        .menu-icon.gold { background: rgba(245, 166, 35, 0.1); }
+        .menu-icon.purple { background: rgba(168, 85, 247, 0.1); }
+        .menu-icon.green { background: rgba(0, 255, 136, 0.1); }
+        .menu-icon.red { background: rgba(255, 71, 87, 0.1); }
+
+        .menu-text {
+            flex: 1;
+        }
+
+        .menu-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .menu-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .menu-arrow {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ─── Toggle Switch ─── */
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle.active {
+            background: var(--accent-cyan);
+        }
+
+        .toggle::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(-20px);
+        }
+
+        /* ─── Progress Bar ─── */
+        .progress-container {
+            margin-top: 12px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .progress-fill.cyan { background: linear-gradient(90deg, var(--accent-cyan), #0099cc); }
+        .progress-fill.gold { background: linear-gradient(90deg, var(--accent-gold), #cc8500); }
+        .progress-fill.purple { background: linear-gradient(90deg, var(--accent-purple), #7c3aed); }
+
+        /* ─── Agent Cards ─── */
+        .agent-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .agent-card:active {
+            transform: scale(0.98);
+            background: var(--bg-card-hover);
+        }
+
+        .agent-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .agent-avatar.dev { background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.05)); border: 1px solid rgba(0, 255, 136, 0.3); }
+        .agent-avatar.sec { background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.05)); border: 1px solid rgba(168, 85, 247, 0.3); }
+        .agent-avatar.opt { background: linear-gradient(135deg, rgba(245, 166, 35, 0.2), rgba(245, 166, 35, 0.05)); border: 1px solid rgba(245, 166, 35, 0.3); }
+
+        .agent-info {
+            flex: 1;
+        }
+
+        .agent-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .agent-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .agent-status {
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .agent-status.online {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-green);
+        }
+
+        .agent-status.idle {
+            background: rgba(245, 166, 35, 0.1);
+            color: var(--accent-gold);
+        }
+
+        /* ─── Bottom Nav ─── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--accent-cyan);
+        }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-secondary);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* ─── Input ─── */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            font-family: 'Vazirmatn', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
+            color: white;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-gold), #cc8500);
+            color: white;
+            box-shadow: var(--glow-gold);
+        }
+
+        .btn-danger {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        /* ─── Scrollbar ─── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        /* ─── Ripple Effect ─── */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .ripple:active::after {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">HERMES</div>
+            <div class="logo-sub">AGENT CONTROL CENTER</div>
+            <div class="status-bar">
+                <div class="status-dot"></div>
+                <span class="status-text">آنلاین و آماده خدمت</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-value cyan" id="mem-count">0</div>
+                <div class="stat-label">حافظه</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value gold" id="skill-count">0</div>
+                <div class="stat-label">مهارت</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value purple" id="cron-count">0</div>
+                <div class="stat-label">کرون‌جاب</div>
+            </div>
+        </div>
+
+        <!-- System Resources -->
+        <div class="section-title">
+            <h2>📊 منابع سیستم</h2>
+            <div class="line"></div>
+        </div>
+        <div style="background: var(--bg-card); border-radius: 16px; padding: 16px; border: 1px solid var(--border);">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">پردازنده (CPU)</span>
+                    <span class="progress-label" id="cpu-val">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill cyan" id="cpu-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">حافظه (RAM)</span>
+                    <span class="progress-label" id="ram-val">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill gold" id="ram-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">دیسک</span>
+                    <span class="progress-label" id="disk-val">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill purple" id="disk-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents -->
+        <div class="section-title">
+            <h2>🤖 ایجنت‌ها</h2>
+            <div class="line"></div>
+        </div>
+        <div class="agent-card ripple" onclick="showAgentDetail('dev')">
+            <div class="agent-avatar dev">💻</div>
+            <div class="agent-info">
+                <div class="agent-name">DevAgent</div>
+                <div class="agent-role">برنامه‌نویس و توسعه‌دهنده</div>
+            </div>
+            <div class="agent-status online">فعال</div>
+        </div>
+        <div class="agent-card ripple" onclick="showAgentDetail('sec')">
+            <div class="agent-avatar sec">🛡️</div>
+            <div class="agent-info">
+                <div class="agent-name">SecAgent</div>
+                <div class="agent-role">متخصص امنیت و Bug Bounty</div>
+            </div>
+            <div class="agent-status online">فعال</div>
+        </div>
+        <div class="agent-card ripple" onclick="showAgentDetail('opt')">
+            <div class="agent-avatar opt">⚡</div>
+            <div class="agent-info">
+                <div class="agent-name">OptiAgent</div>
+                <div class="agent-role">مهندس بهینه‌سازی و عملکرد</div>
+            </div>
+            <div class="agent-status idle">آماده</div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-title">
+            <h2>⚡ دسترسی سریع</h2>
+            <div class="line"></div>
+        </div>
+        <div class="cards-grid">
+            <div class="card ripple" onclick="openModal('memory')">
+                <div class="card-badge badge-cyan">جدید</div>
+                <div class="card-icon">🧠</div>
+                <div class="card-title">حافظه</div>
+                <div class="card-desc">مشاهده و مدیریت حافظه پایدار</div>
+            </div>
+            <div class="card ripple" onclick="openModal('skills')">
+                <div class="card-badge badge-gold">13+</div>
+                <div class="card-icon">🎯</div>
+                <div class="card-title">مهارت‌ها</div>
+                <div class="card-desc">مدیریت مهارت‌های یادگرفته</div>
+            </div>
+            <div class="card ripple" onclick="openModal('cron')">
+                <div class="card-icon">⏰</div>
+                <div class="card-title">کرون‌جاب‌ها</div>
+                <div class="card-desc">کارهای زمان‌بندی شده</div>
+            </div>
+            <div class="card ripple" onclick="openModal('settings')">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">تنظیمات</div>
+                <div class="card-desc">پیکربندی سیستم</div>
+            </div>
+            <div class="card card-full ripple" onclick="openModal('logs')">
+                <div class="card-icon">📋</div>
+                <div class="card-title">گزارش فعالیت‌ها</div>
+                <div class="card-desc">آخرین عملیات انجام شده توسط هرمس</div>
+            </div>
+        </div>
+
+        <!-- Menu -->
+        <div class="section-title">
+            <h2>📌 منو</h2>
+            <div class="line"></div>
+        </div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="sendCommand('/help')">
+                <div class="menu-icon cyan">❓</div>
+                <div class="menu-text">
+                    <div class="menu-title">راهنما</div>
+                    <div class="menu-subtitle">لیست کامل دستورات</div>
+                </div>
+                <div class="menu-arrow">◀</div>
+            </div>
+            <div class="menu-item" onclick="sendCommand('/status')">
+                <div class="menu-icon green">📊</div>
+                <div class="menu-text">
+                    <div class="menu-title">وضعیت سیستم</div>
+                    <div class="menu-subtitle">اطلاعات دقیق سرور</div>
+                </div>
+                <div class="menu-arrow">◀</div>
+            </div>
+            <div class="menu-item" onclick="openModal('memory')">
+                <div class="menu-icon purple">🧠</div>
+                <div class="menu-text">
+                    <div class="menu-title">حافظه هوش مصنوعی</div>
+                    <div class="menu-subtitle">آنچه هرمس به یاد دارد</div>
+                </div>
+                <div class="menu-arrow">◀</div>
+            </div>
+            <div class="menu-item" onclick="openModal('settings')">
+                <div class="menu-icon gold">⚙️</div>
+                <div class="menu-text">
+                    <div class="menu-title">تنظیمات پیشرفته</div>
+                    <div class="menu-subtitle">مدل، ارائه‌دهنده، و بیشتر</div>
+                </div>
+                <div class="menu-arrow">◀</div>
+            </div>
+            <div class="menu-item" onclick="openModal('backup')">
+                <div class="menu-icon red">💾</div>
+                <div class="menu-text">
+                    <div class="menu-title">بکاپ و بازیابی</div>
+                    <div class="menu-subtitle">پشتیبان‌گیری از داده‌ها</div>
+                </div>
+                <div class="menu-arrow">◀</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 30px 0 20px; color: var(--text-muted); font-size: 11px;">
+            Hermes Agent v1.0 — Nous Research<br>
+            Powered by AI • Self-Hosted • Private
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">خانه</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('agents')">
+            <div class="nav-icon">🤖</div>
+            <div class="nav-label">ایجنت‌ها</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('chat')">
+            <div class="nav-icon">💬</div>
+            <div class="nav-label">چت</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div class="nav-label">تنظیمات</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-handle"></div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ─── Telegram WebApp Init ───
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            tg.setHeaderColor('#0a0a0f');
+            tg.setBackgroundColor('#0a0a0f');
+        }
+
+        // ─── Animate Stats ───
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // ─── Simulate System Stats ───
+        function updateStats() {
+            const cpu = Math.floor(Math.random() * 40 + 10);
+            const ram = Math.floor(Math.random() * 30 + 40);
+            const disk = 62;
+            
+            document.getElementById('cpu-val').textContent = cpu + '%';
+            document.getElementById('cpu-bar').style.width = cpu + '%';
+            
+            document.getElementById('ram-val').textContent = ram + '%';
+            document.getElementById('ram-bar').style.width = ram + '%';
+            
+            document.getElementById('disk-val').textContent = disk + '%';
+            document.getElementById('disk-bar').style.width = disk + '%';
+        }
+
+        // ─── Init ───
+        window.addEventListener('load', () => {
+            animateValue('mem-count', 0, 3, 1000);
+            animateValue('skill-count', 0, 13, 1200);
+            animateValue('cron-count', 0, 1, 800);
+            updateStats();
+            setInterval(updateStats, 5000);
+        });
+
+        // ─── Send Command to Bot ───
+        function sendCommand(cmd) {
+            if (tg) {
+                tg.sendData(JSON.stringify({ action: 'command', command: cmd }));
+            } else {
+                alert('دستور: ' + cmd);
+            }
+        }
+
+        // ─── Tab Switching ───
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            if (tg) {
+                tg.sendData(JSON.stringify({ action: 'tab', tab: tab }));
+            }
+        }
+
+        // ─── Modal System ───
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const body = document.getElementById('modal-body');
+            
+            const modals = {
+                memory: `
+                    <div class="modal-title">🧠 حافظه هوش مصنوعی</div>
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border);">
+                        <div style="font-size: 13px; color: var(--accent-cyan); font-weight: 600; margin-bottom: 8px;">👤 پروفایل کاربر</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                            نام: حسین<br>
+                            زبان: فارسی<br>
+                            اولین ملاقات: ۲۶ ژوئیه ۲۰۲۶
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border);">
+                        <div style="font-size: 13px; color: var(--accent-gold); font-weight: 600; margin-bottom: 8px;">📝 یادداشت‌ها</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                            بکاپ کرون‌جاب: هر ۱۲ ساعت<br>
+                            ریپو: Hermesbackups<br>
+                            پروژه: خانه هوشمند ایلام
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendCommand('/memory')">مشاهده کامل حافظه</button>
+                `,
+                skills: `
+                    <div class="modal-title">🎯 مهارت‌ها</div>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <div class="menu-item" style="background: var(--bg-card); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div class="menu-icon cyan">🎨</div>
+                            <div class="menu-text">
+                                <div class="menu-title">ai-image-prompts</div>
+                                <div class="menu-subtitle">پرومپت‌های تصویری Gemini</div>
+                            </div>
+                        </div>
+                        <div class="menu-item" style="background: var(--bg-card); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div class="menu-icon green">💻</div>
+                            <div class="menu-text">
+                                <div class="menu-title">python-debugpy</div>
+                                <div class="menu-subtitle">دیباگ پایتون</div>
+                            </div>
+                        </div>
+                        <div class="menu-item" style="background: var(--bg-card); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div class="menu-icon purple">🔒</div>
+                            <div class="menu-text">
+                                <div class="menu-title">systematic-debugging</div>
+                                <div class="menu-subtitle">دیباگ سیستماتیک</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendCommand('/skills')" style="margin-top: 12px;">مشاهده همه مهارت‌ها</button>
+                `,
+                cron: `
+                    <div class="modal-title">⏰ کرون‌جاب‌ها</div>
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 16px; border: 1px solid var(--border); margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600;">Hermes Backup</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">هر ۱۲ ساعت</div>
+                            </div>
+                            <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 11px; color: var(--text-secondary);">
+                            اجرای بعدی: امشب ۲۱:۲۹
+                        </div>
+                    </div>
+                    <button class="btn btn-gold" onclick="sendCommand('/cron list')">مشاهده همه کرون‌جاب‌ها</button>
+                `,
+                settings: `
+                    <div class="modal-title">⚙️ تنظیمات</div>
+                    <div class="menu-list" style="margin-bottom: 12px;">
+                        <div class="menu-item">
+                            <div class="menu-icon cyan">🤖</div>
+                            <div class="menu-text">
+                                <div class="menu-title">مدل هوش مصنوعی</div>
+                                <div class="menu-subtitle">Mimohermes</div>
+                            </div>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon purple">🔌</div>
+                            <div class="menu-text">
+                                <div class="menu-title">ارائه‌دهنده</div>
+                                <div class="menu-subtitle">openai-api</div>
+                            </div>
+                        </div>
+                        <div class="menu-item">
+                            <div class="menu-icon gold">🌍</div>
+                            <div class="menu-text">
+                                <div class="menu-title">زبان</div>
+                                <div class="menu-subtitle">فارسی (Persian)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendCommand('/config')">تغییر تنظیمات</button>
+                `,
+                logs: `
+                    <div class="modal-title">📋 گزارش فعالیت‌ها</div>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 11px; color: var(--accent-green);">✅ بکاپ موفق</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">۱۰:۳۰ — آپلود به GitHub</div>
+                        </div>
+                        <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 11px; color: var(--accent-cyan);">🤖 Multi-Agent اجرا شد</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">۰۹:۵۵ — DevSecOps Pipeline</div>
+                        </div>
+                        <div style="background: var(--bg-card); border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--border);">
+                            <div style="font-size: 11px; color: var(--accent-gold);">🧠 حافظه بروزرسانی شد</div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">۰۹:۴۸ — پروفایل کاربر</div>
+                        </div>
+                    </div>
+                `,
+                backup: `
+                    <div class="modal-title">💾 بکاپ و بازیابی</div>
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 16px; border: 1px solid var(--border); margin-bottom: 12px;">
+                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.8;">
+                            📅 آخرین بکاپ: امروز ۰۹:۳۰<br>
+                            📦 حجم: 2.1 MB<br>
+                            🔗 ریپو: Hermesbackups
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendCommand('/backup now')" style="margin-bottom: 10px;">بکاپ فوری</button>
+                    <button class="btn btn-danger" onclick="sendCommand('/backup restore')">بازیابی از بکاپ</button>
+                `
+            };
+            
+            body.innerHTML = modals[type] || '<div>محتوا یافت نشد</div>';
+            modal.classList.add('show');
+        }
+
+        function closeModal(e) {
+            if (e.target === document.getElementById('modal')) {
+                document.getElementById('modal').classList.remove('show');
+            }
+        }
+
+        // ─── Agent Detail ───
+        function showAgentDetail(agent) {
+            const details = {
+                dev: '💻 DevAgent — برنامه‌نویس و توسعه‌دهنده\nتوانایی: نوشتن کد، دیباگ، تست، Code Review',
+                sec: '🛡️ SecAgent — متخصص امنیت\nتوانایی: آنالیز آسیب‌پذیری، Bug Bounty، تست نفوذ',
+                opt: '⚡ OptiAgent — مهندس بهینه‌سازی\nتوانایی: بهینه‌سازی کد، عملکرد، Clean Code'
+            };
+            
+            if (tg) {
+                tg.showAlert(details[agent]);
+            } else {
+                alert(details[agent]);
+            }
+        }
+
+        // ─── Haptic Feedback ───
+        function haptic(type) {
+            if (tg?.HapticFeedback) {
+                tg.HapticFeedback[type]();
+            }
+        }
+
+        // Add haptic to all interactive elements
+        document.querySelectorAll('.card, .menu-item, .agent-card, .nav-item').forEach(el => {
+            el.addEventListener('click', () => haptic('impactOccurred'));
+        });
+    </script>
+</body>
+</html>
