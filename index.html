@@ -8,7 +8,90 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js">
+// ─── Chat Management ───
+function openChatHistory(id){
+    haptic('light');
+    showToast('باز کردن چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_open', id:id}));
+}
+
+function deleteChat(id){
+    doConfirm('حذف چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
+    // Remove from UI
+    event.target.closest('.lst').style.display='none';
+}
+
+function createNewChatSession(){
+    const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
+    const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
+    haptic('medium');
+    showToast('✅ چت جدید ساخته شد: ' + title);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
+}
+
+// ─── Cron Job Creator ───
+function createCronJob(){
+    const name = document.getElementById('cronNameInput')?.value;
+    const expr = document.getElementById('cronExprInput')?.value;
+    const handler = document.getElementById('cronHandlerInput')?.value;
+    const deliver = document.getElementById('cronDeliverInput')?.value;
+    
+    if(!name || !expr){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ کرون‌جاب ساخته شد: ' + name);
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'cron_create',
+            name:name,
+            schedule:expr,
+            script:handler,
+            deliver:deliver
+        }));
+    }
+}
+
+// ─── Skill Builder ───
+function addNewSkill(){
+    const name = document.getElementById('skillNameInput')?.value;
+    const desc = document.getElementById('skillDescInput')?.value;
+    const path = document.getElementById('skillPathInput')?.value;
+    const trigger = document.getElementById('skillTriggerInput')?.value;
+    
+    if(!name || !path){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ مهارت جدید اضافه شد: ' + name);
+    
+    // Add to skills data
+    if(APP_DATA?.skills){
+        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
+        renderSkills();
+    }
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'skill_create',
+            name:name,
+            desc:desc,
+            path:path,
+            trigger:trigger
+        }));
+    }
+}
+
+</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -232,7 +315,90 @@
     window.addEventListener('load', () => {
         syncData();
     });
-    </script>
+    
+// ─── Chat Management ───
+function openChatHistory(id){
+    haptic('light');
+    showToast('باز کردن چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_open', id:id}));
+}
+
+function deleteChat(id){
+    doConfirm('حذف چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
+    // Remove from UI
+    event.target.closest('.lst').style.display='none';
+}
+
+function createNewChatSession(){
+    const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
+    const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
+    haptic('medium');
+    showToast('✅ چت جدید ساخته شد: ' + title);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
+}
+
+// ─── Cron Job Creator ───
+function createCronJob(){
+    const name = document.getElementById('cronNameInput')?.value;
+    const expr = document.getElementById('cronExprInput')?.value;
+    const handler = document.getElementById('cronHandlerInput')?.value;
+    const deliver = document.getElementById('cronDeliverInput')?.value;
+    
+    if(!name || !expr){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ کرون‌جاب ساخته شد: ' + name);
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'cron_create',
+            name:name,
+            schedule:expr,
+            script:handler,
+            deliver:deliver
+        }));
+    }
+}
+
+// ─── Skill Builder ───
+function addNewSkill(){
+    const name = document.getElementById('skillNameInput')?.value;
+    const desc = document.getElementById('skillDescInput')?.value;
+    const path = document.getElementById('skillPathInput')?.value;
+    const trigger = document.getElementById('skillTriggerInput')?.value;
+    
+    if(!name || !path){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ مهارت جدید اضافه شد: ' + name);
+    
+    // Add to skills data
+    if(APP_DATA?.skills){
+        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
+        renderSkills();
+    }
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'skill_create',
+            name:name,
+            desc:desc,
+            path:path,
+            trigger:trigger
+        }));
+    }
+}
+
+</script>
 
 </head>
 <body>
@@ -457,6 +623,13 @@
     <div class="bnav-btn" onclick="navTo('brain',this)"><div class="bnav-icon">🧠</div><div class="bnav-lbl">مهارت‌ها</div></div>
     <div class="bnav-btn" onclick="navTo('cron',this)"><div class="bnav-icon">⚡</div><div class="bnav-lbl">جاب‌ها</div></div>
     <div class="bnav-btn" onclick="navTo('config',this)"><div class="bnav-icon">🎛️</div><div class="bnav-lbl">تنظیمات</div></div>
+    </div>
+    <!-- Second row nav -->
+    <div class="flex justify-around py-1" style="border-top:1px solid var(--border)">
+        <div class="bnav-btn" onclick="navTo('chats',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">💬</div><div class="bnav-lbl">چت‌ها</div></div>
+        <div class="bnav-btn" onclick="navTo('croncreator',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">➕</div><div class="bnav-lbl">جاب جدید</div></div>
+        <div class="bnav-btn" onclick="navTo('skillbuilder',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">🧠</div><div class="bnav-lbl">مهارت جدید</div></div>
+    </div>
 </div>
 
 <!-- MODAL -->
@@ -731,6 +904,89 @@ window.addEventListener('load', ()=>{
         });
     });
 });
+
+// ─── Chat Management ───
+function openChatHistory(id){
+    haptic('light');
+    showToast('باز کردن چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_open', id:id}));
+}
+
+function deleteChat(id){
+    doConfirm('حذف چت #' + id);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
+    // Remove from UI
+    event.target.closest('.lst').style.display='none';
+}
+
+function createNewChatSession(){
+    const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
+    const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
+    haptic('medium');
+    showToast('✅ چت جدید ساخته شد: ' + title);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
+}
+
+// ─── Cron Job Creator ───
+function createCronJob(){
+    const name = document.getElementById('cronNameInput')?.value;
+    const expr = document.getElementById('cronExprInput')?.value;
+    const handler = document.getElementById('cronHandlerInput')?.value;
+    const deliver = document.getElementById('cronDeliverInput')?.value;
+    
+    if(!name || !expr){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ کرون‌جاب ساخته شد: ' + name);
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'cron_create',
+            name:name,
+            schedule:expr,
+            script:handler,
+            deliver:deliver
+        }));
+    }
+}
+
+// ─── Skill Builder ───
+function addNewSkill(){
+    const name = document.getElementById('skillNameInput')?.value;
+    const desc = document.getElementById('skillDescInput')?.value;
+    const path = document.getElementById('skillPathInput')?.value;
+    const trigger = document.getElementById('skillTriggerInput')?.value;
+    
+    if(!name || !path){
+        haptic('heavy');
+        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
+        return;
+    }
+    
+    haptic('notificationOccurred');
+    showToast('✅ مهارت جدید اضافه شد: ' + name);
+    
+    // Add to skills data
+    if(APP_DATA?.skills){
+        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
+        renderSkills();
+    }
+    
+    if(tg?.sendData){
+        tg.sendData(JSON.stringify({
+            action:'skill_create',
+            name:name,
+            desc:desc,
+            path:path,
+            trigger:trigger
+        }));
+    }
+}
+
 </script>
 
 <!-- HELP MODAL -->
