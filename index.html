@@ -8,90 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <script src="https://telegram.org/js/telegram-web-app.js">
-// ─── Chat Management ───
-function openChatHistory(id){
-    haptic('light');
-    showToast('باز کردن چت #' + id);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_open', id:id}));
-}
-
-function deleteChat(id){
-    doConfirm('حذف چت #' + id);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
-    // Remove from UI
-    event.target.closest('.lst').style.display='none';
-}
-
-function createNewChatSession(){
-    const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
-    const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
-    haptic('medium');
-    showToast('✅ چت جدید ساخته شد: ' + title);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
-}
-
-// ─── Cron Job Creator ───
-function createCronJob(){
-    const name = document.getElementById('cronNameInput')?.value;
-    const expr = document.getElementById('cronExprInput')?.value;
-    const handler = document.getElementById('cronHandlerInput')?.value;
-    const deliver = document.getElementById('cronDeliverInput')?.value;
-    
-    if(!name || !expr){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
-        return;
-    }
-    
-    haptic('notificationOccurred');
-    showToast('✅ کرون‌جاب ساخته شد: ' + name);
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'cron_create',
-            name:name,
-            schedule:expr,
-            script:handler,
-            deliver:deliver
-        }));
-    }
-}
-
-// ─── Skill Builder ───
-function addNewSkill(){
-    const name = document.getElementById('skillNameInput')?.value;
-    const desc = document.getElementById('skillDescInput')?.value;
-    const path = document.getElementById('skillPathInput')?.value;
-    const trigger = document.getElementById('skillTriggerInput')?.value;
-    
-    if(!name || !path){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
-        return;
-    }
-    
-    haptic('notificationOccurred');
-    showToast('✅ مهارت جدید اضافه شد: ' + name);
-    
-    // Add to skills data
-    if(APP_DATA?.skills){
-        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
-        renderSkills();
-    }
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'skill_create',
-            name:name,
-            desc:desc,
-            path:path,
-            trigger:trigger
-        }));
-    }
-}
-
-</script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -235,15 +152,11 @@ function addNewSkill(){
         // Update stats directly (no animation, just set values)
         if(APP_DATA.stats){
             const s = APP_DATA.stats;
-            // Only update stats in pg-home
-            const homePage = document.getElementById('pg-home');
-            if(homePage){
-                const els = homePage.querySelectorAll('[data-end]');
-                if(els[0]) els[0].textContent = s.chats || 0;
-                if(els[1]) els[1].textContent = s.skills_count || 0;
-                if(els[2]) els[2].textContent = s.cron_count || 0;
-                if(els[3]) els[3].textContent = s.memory_count || 0;
-            }
+            const els = document.querySelectorAll('[data-end]');
+            if(els[0]) els[0].textContent = s.chats || 0;
+            if(els[1]) els[1].textContent = s.skills_count || 0;
+            if(els[2]) els[2].textContent = s.cron_count || 0;
+            if(els[3]) els[3].textContent = s.memory_count || 0;
         }
         
         // Update version badge
@@ -274,12 +187,8 @@ function addNewSkill(){
     
     function renderSkills(){
         if(!APP_DATA?.skills) return;
-        // Only render in pg-brain page
-        const brainPage = document.getElementById('pg-brain');
-        if(!brainPage) return;
         const container = document.getElementById('skillsList');
         if(!container) return;
-        // Clear only the skillsList container
         container.innerHTML = '';
         APP_DATA.skills.forEach((s, i) => {
             const div = document.createElement('div');
@@ -292,12 +201,8 @@ function addNewSkill(){
     
     function renderCronJobs(){
         if(!APP_DATA?.cron_jobs) return;
-        // Only render in pg-cron page
-        const cronPage = document.getElementById('pg-cron');
-        if(!cronPage) return;
         const container = document.getElementById('cronList');
         if(!container) return;
-        // Clear only the cronList container
         container.innerHTML = '';
         APP_DATA.cron_jobs.forEach(j => {
             const div = document.createElement('div');
@@ -338,7 +243,6 @@ function openChatHistory(id){
 function deleteChat(id){
     doConfirm('حذف چت #' + id);
     if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
-    // Remove from UI
     event.target.closest('.lst').style.display='none';
 }
 
@@ -346,7 +250,7 @@ function createNewChatSession(){
     const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
     const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
     haptic('medium');
-    showToast('✅ چت جدید ساخته شد: ' + title);
+    showToast('✅ چت جدید: ' + title);
     if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
 }
 
@@ -356,25 +260,10 @@ function createCronJob(){
     const expr = document.getElementById('cronExprInput')?.value;
     const handler = document.getElementById('cronHandlerInput')?.value;
     const deliver = document.getElementById('cronDeliverInput')?.value;
-    
-    if(!name || !expr){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
-        return;
-    }
-    
+    if(!name || !expr){ haptic('heavy'); showToast('⚠️ نام و زمان‌بندی رو پر کنید'); return; }
     haptic('notificationOccurred');
     showToast('✅ کرون‌جاب ساخته شد: ' + name);
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'cron_create',
-            name:name,
-            schedule:expr,
-            script:handler,
-            deliver:deliver
-        }));
-    }
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'cron_create', name:name, schedule:expr, script:handler, deliver:deliver}));
 }
 
 // ─── Skill Builder ───
@@ -383,32 +272,60 @@ function addNewSkill(){
     const desc = document.getElementById('skillDescInput')?.value;
     const path = document.getElementById('skillPathInput')?.value;
     const trigger = document.getElementById('skillTriggerInput')?.value;
-    
-    if(!name || !path){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
-        return;
-    }
-    
+    if(!name || !path){ haptic('heavy'); showToast('⚠️ نام و مسیر فایل رو پر کنید'); return; }
     haptic('notificationOccurred');
-    showToast('✅ مهارت جدید اضافه شد: ' + name);
-    
-    // Add to skills data
-    if(APP_DATA?.skills){
-        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
-        renderSkills();
-    }
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'skill_create',
-            name:name,
-            desc:desc,
-            path:path,
-            trigger:trigger
-        }));
-    }
+    showToast('✅ مهارت جدید: ' + name);
+    if(tg?.sendData) tg.sendData(JSON.stringify({action:'skill_create', name:name, desc:desc, path:path, trigger:trigger}));
 }
+
+// ─── Live Logs ───
+function openLogs(){
+    haptic('light');
+    document.getElementById('logsModal').classList.add('show');
+}
+
+function refreshLogs(){
+    const c = document.getElementById('logContainer');
+    if(!c) return;
+    const now = new Date().toLocaleTimeString('fa-IR');
+    const d = document.createElement('div');
+    d.style.color = 'var(--cyan)';
+    d.textContent = '[SYNC] ' + now + ' - data.json refreshed';
+    c.appendChild(d);
+    c.scrollTop = c.scrollHeight;
+}
+
+// ─── Memory Explorer ───
+function openMemory(){
+    haptic('light');
+    document.getElementById('memoryModal').classList.add('show');
+}
+
+function filterMemory(q){
+    document.querySelectorAll('#memoryList .lst').forEach(i => {
+        i.style.display = i.textContent.toLowerCase().includes(q.toLowerCase()) ? 'flex' : 'none';
+    });
+}
+
+// ─── Event-Driven Sync ───
+const origDoAction = doAction;
+doAction = function(cmd){
+    origDoAction(cmd);
+    setTimeout(()=>{ syncData(); }, 1500);
+};
+
+// ─── Pull-to-Refresh ───
+let touchStartY = 0;
+let isPulling = false;
+document.addEventListener('touchstart', (e) => { if(window.scrollY===0) touchStartY = e.touches[0].clientY; });
+document.addEventListener('touchmove', (e) => {
+    if(e.touches[0].clientY - touchStartY > 80 && window.scrollY===0 && !isPulling){
+        isPulling = true;
+        showToast('🔄 در حال بروزرسانی...');
+        syncData().then(()=>{ showToast('✅ بروزرسانی شد!'); isPulling = false; });
+    }
+});
+document.addEventListener('touchend', () => { isPulling = false; });
 
 </script>
 
@@ -448,7 +365,7 @@ function addNewSkill(){
             <div class="card glass" onclick="doAction('help')"><div class="card-icon">❓</div><div class="card-title">راهنما</div><div class="card-desc">لیست دستورات</div></div>
             <div class="card glass" onclick="doAction('status')"><div class="card-icon">📊</div><div class="card-title">وضعیت سیستم</div><div class="card-desc">منابع سرور</div></div>
             <div class="card glass" onclick="doAction('backup')"><div class="card-icon">💾</div><div class="card-title">بکاپ فوری</div><div class="card-desc">پشتیبان‌گیری</div></div>
-            <div class="card glass" onclick="openModal('memory')"><div class="card-icon">🧠</div><div class="card-title">حافظه</div><div class="card-desc">مشاهده و مدیریت</div></div>
+            <div class="card glass" onclick="openMemory()"><div class="card-icon">🧠</div><div class="card-title">حافظه</div><div class="card-desc">مشاهده و مدیریت</div></div>
         </div>
 
         <div class="sec"><span class="sec-icon">📋</span><span class="sec-text">آخرین فعالیت‌ها</span><div class="sec-line"></div></div>
@@ -459,7 +376,7 @@ function addNewSkill(){
     </div>
 
     <!-- ═══════════ NEURAL BRAIN ═══════════ -->
-    <div class="pg" id="pg-brain">
+    <div class="pg" id="pg-brain"><div id="skillsList"></div>
         <div class="canvas-wrap glass">
             <div class="canvas-badge">🧠 Neural Skill Matrix</div>
             <canvas id="brainCanvas"></canvas>
@@ -479,8 +396,6 @@ function addNewSkill(){
                 </div>
             </div>
         </div>
-        
-        <div id="skillsList"></div>
 
         <div class="sec"><span class="sec-icon">🗄️</span><span class="sec-text">حافظه AISOS Vector DB</span><div class="sec-line"></div></div>
         <div class="glass" style="padding:14px;margin-bottom:10px">
@@ -504,9 +419,70 @@ function addNewSkill(){
     </div>
 
     <!-- ═══════════ CRON JOBS ═══════════ -->
-    <div class="pg" id="pg-cron">
+    <div class="pg" id="pg-cron"><div id="cronList"></div>
         <div class="sec"><span class="sec-icon">⚡</span><span class="sec-text">روند اجرای زنده</span><div class="sec-line"></div></div>
-        <div id="cronList"></div></div>
+        <div id="cronList"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">💾</span><div><div style="font-size:12px;font-weight:700">Hermes Backup</div><div style="font-size:9px;color:#555">هر ۱۲ ساعت → GitHub</div></div></div>
+                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle backup')"></div>
+            </div>
+            <div class="flow">
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
+            </div>
+            <div class="flow-labels"><span>Trigger</span><span>Fetch</span><span>Hermes AI</span><span>Push</span></div>
+            <div style="font-size:9px;color:#555;margin-top:6px">اجرای بعدی: <span style="color:var(--green);font-family:monospace">۱۳:۱۹</span></div>
+        </div>
+
+        <!-- Smart Home -->
+        <div class="glass" style="padding:14px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🏠</span><div><div style="font-size:12px;font-weight:700">Smart Home Radar</div><div style="font-size:9px;color:#555">هر روز ۰۹:۳۰ → کانال</div></div></div>
+                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle smarthome')"></div>
+            </div>
+            <div class="flow">
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
+            </div>
+            <div class="flow-labels"><span>Trigger</span><span>Web Scan</span><span>Hermes AI</span><span>Channel</span></div>
+        </div>
+
+        <!-- Gem Hunter -->
+        <div class="glass" style="padding:14px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔍</span><div><div style="font-size:12px;font-weight:700">GitHub Gem Hunter</div><div style="font-size:9px;color:#555">هر روز ۱۰:۰۰ → کانال</div></div></div>
+                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle hunter')"></div>
+            </div>
+            <div class="flow">
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
+            </div>
+            <div class="flow-labels"><span>Trigger</span><span>GitHub API</span><span>Hermes AI</span><span>Channel</span></div>
+        </div>
+
+        <!-- AISOS -->
+        <div class="glass" style="padding:14px;margin-bottom:14px;border-color:rgba(168,85,247,0.3)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🎯</span><div><div style="font-size:12px;font-weight:700;color:var(--purple)">AISOS Engine</div><div style="font-size:9px;color:#555">هر روز ۱۱:۰۰ → کانال</div></div></div>
+                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle aisos')"></div>
+            </div>
+            <div class="flow">
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2);animation:pulse 2s infinite">⚙️</div><div class="flow-line"></div>
+                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
+            </div>
+            <div class="flow-labels"><span>Trigger</span><span>GitHub/H1</span><span>AISOS AI</span><span>Channel</span></div>
+        </div>
+
+        <button class="btn btn-cyan" onclick="doAction('cron run all')" style="font-size:13px">▶ اجرای دستی تمام جاب‌ها</button>
+    </div>
 
     <!-- ═══════════ CONFIG ═══════════ -->
     <div class="pg" id="pg-config">
@@ -586,11 +562,6 @@ function addNewSkill(){
                 <div class="lst-text"><div class="lst-title">بحث AI و باگ‌بونتی</div><div class="lst-sub">Model: Mimohermes • 18 پیام</div></div>
                 <button onclick="event.stopPropagation();deleteChat('102')" style="background:none;border:none;color:var(--red);font-size:16px;padding:8px">🗑️</button>
             </div>
-            <div class="lst glass" onclick="openChatHistory('103')">
-                <div class="lst-icon" style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:10px;font-weight:700">#103</div>
-                <div class="lst-text"><div class="lst-title">طراحی Mini App</div><div class="lst-sub">Model: Mimohermes • 8 پیام</div></div>
-                <button onclick="event.stopPropagation();deleteChat('103')" style="background:none;border:none;color:var(--red);font-size:16px;padding:8px">🗑️</button>
-            </div>
         </div>
     </div>
 
@@ -598,12 +569,8 @@ function addNewSkill(){
     <div class="pg" id="pg-croncreator">
         <div class="sec"><span class="sec-icon">➕</span><span class="sec-text">ساخت کرون‌جاب جدید</span><div class="sec-line"></div></div>
         <div class="glass" style="padding:16px">
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام جاب</label>
-                <input type="text" id="cronNameInput" placeholder="مثلاً: اسکن روزانه آسیب‌پذیری‌ها" class="inp" style="color:var(--cyan)">
-            </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">زمان‌بندی (Cron)</label>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام جاب</label><input type="text" id="cronNameInput" placeholder="مثلاً: اسکن روزانه" class="inp" style="color:var(--cyan)"></div>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">زمان‌بندی (Cron)</label>
                 <div style="display:flex;gap:8px">
                     <input type="text" id="cronExprInput" placeholder="0 * * * *" class="inp" style="flex:1;color:var(--purple);font-family:monospace">
                     <select class="sel" style="width:auto;font-size:10px" onchange="document.getElementById('cronExprInput').value=this.value">
@@ -611,12 +578,10 @@ function addNewSkill(){
                         <option value="0 0 * * *">روزانه</option>
                         <option value="*/15 * * * *">هر ۱۵ دقیقه</option>
                         <option value="*/30 * * * *">هر ۳۰ دقیقه</option>
-                        <option value="0 9 * * *">هر روز ۹ صبح</option>
                     </select>
                 </div>
             </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">Handler</label>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">Handler</label>
                 <select id="cronHandlerInput" class="sel">
                     <option value="tools/news_fetch.py">Tech News Tracker</option>
                     <option value="tools/sec_scan.py">Vulnerability Scanner</option>
@@ -624,8 +589,7 @@ function addNewSkill(){
                     <option value="tools/aisos_engine.py">AISOS Engine</option>
                 </select>
             </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">کانال</label>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">کانال</label>
                 <select id="cronDeliverInput" class="sel">
                     <option value="telegram:@hermesagent219">@hermesagent219</option>
                     <option value="origin">همین چت</option>
@@ -640,20 +604,10 @@ function addNewSkill(){
     <div class="pg" id="pg-skillbuilder">
         <div class="sec"><span class="sec-icon">🧠</span><span class="sec-text">افزودن مهارت جدید</span><div class="sec-line"></div></div>
         <div class="glass" style="padding:16px">
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام مهارت</label>
-                <input type="text" id="skillNameInput" placeholder="مثلاً: تحلیل احساسات متن" class="inp" style="color:var(--cyan)">
-            </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">توضیحات</label>
-                <textarea id="skillDescInput" rows="2" placeholder="توضیح کوتاه..." class="inp" style="color:#aaa"></textarea>
-            </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">مسیر فایل</label>
-                <input type="text" id="skillPathInput" placeholder="tools/sentiment.py" class="inp" style="color:var(--purple);font-family:monospace">
-            </div>
-            <div style="margin-bottom:12px">
-                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">روش فراخوانی</label>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام مهارت</label><input type="text" id="skillNameInput" placeholder="مثلاً: تحلیل احساسات" class="inp" style="color:var(--cyan)"></div>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">توضیحات</label><textarea id="skillDescInput" rows="2" placeholder="توضیح کوتاه..." class="inp" style="color:#aaa"></textarea></div>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">مسیر فایل</label><input type="text" id="skillPathInput" placeholder="tools/sentiment.py" class="inp" style="color:var(--purple);font-family:monospace"></div>
+            <div style="margin-bottom:12px"><label style="font-size:10px;color:#888;display:block;margin-bottom:4px">روش فراخوانی</label>
                 <select id="skillTriggerInput" class="sel">
                     <option value="On Command">دستی</option>
                     <option value="Cron Daily">خودکار روزانه</option>
@@ -664,80 +618,18 @@ function addNewSkill(){
         </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-
+<!-- BOTTOM NAV -->
 <div class="bnav">
     <div class="bnav-btn active" onclick="navTo('home',this)"><div class="bnav-icon">🏠</div><div class="bnav-lbl">خانه</div></div>
     <div class="bnav-btn" onclick="navTo('brain',this)"><div class="bnav-icon">🧠</div><div class="bnav-lbl">مهارت‌ها</div></div>
     <div class="bnav-btn" onclick="navTo('cron',this)"><div class="bnav-icon">⚡</div><div class="bnav-lbl">جاب‌ها</div></div>
     <div class="bnav-btn" onclick="navTo('config',this)"><div class="bnav-icon">🎛️</div><div class="bnav-lbl">تنظیمات</div></div>
     </div>
-    <!-- Second row nav -->
     <div class="flex justify-around py-1" style="border-top:1px solid var(--border)">
         <div class="bnav-btn" onclick="navTo('chats',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">💬</div><div class="bnav-lbl">چت‌ها</div></div>
         <div class="bnav-btn" onclick="navTo('croncreator',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">➕</div><div class="bnav-lbl">جاب جدید</div></div>
         <div class="bnav-btn" onclick="navTo('skillbuilder',this)" style="padding:4px 10px"><div class="bnav-icon" style="font-size:14px">🧠</div><div class="bnav-lbl">مهارت جدید</div></div>
     </div>
-</div>
-
-
-<!-- Live Logs Terminal Modal -->
-<div id="logsModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
-    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
-        <div class="modal-handle"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
-            <h3 style="font-size:12px;font-weight:700;color:var(--cyan);font-family:monospace">📟 HERMES LIVE LOGS</h3>
-            <button onclick="document.getElementById('logsModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
-        </div>
-        <div id="logContainer" style="flex:1;background:#000;border-radius:12px;padding:10px;margin:10px 0;font-family:monospace;font-size:10px;color:var(--green);overflow-y:auto;border:1px solid var(--border);direction:ltr;text-align:left">
-            <div style="color:#555">[SYSTEM] Hermes Core v3.2 initialized...</div>
-            <div style="color:var(--green)">[OK] Gateway connected to Telegram</div>
-            <div style="color:var(--cyan)">[CRON] Smart Home Radar scheduled for 13:00</div>
-            <div style="color:var(--gold)">[MEMORY] AISOS DB: 10 records loaded</div>
-            <div style="color:var(--purple)">[SYNC] data.json updated successfully</div>
-        </div>
-        <button class="btn btn-cyan" onclick="refreshLogs()" style="margin-top:8px">🔄 بروزرسانی لاگ‌ها</button>
-    </div>
-</div>
-
-<!-- Memory Explorer Modal -->
-<div id="memoryModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
-    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
-        <div class="modal-handle"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
-            <h3 style="font-size:12px;font-weight:700;color:var(--purple)">🧠 مدیریت حافظه AISOS</h3>
-            <button onclick="document.getElementById('memoryModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
-        </div>
-        <input type="text" id="memorySearch" placeholder="🔍 جستجو در داده‌ها..." class="inp" style="margin:10px 0;color:var(--cyan)" oninput="filterMemory(this.value)">
-        <div id="memoryList" style="flex:1;overflow-y:auto">
-            <div class="lst glass" style="margin-bottom:6px">
-                <div class="lst-icon" style="background:rgba(255,71,87,0.15);color:var(--red);font-size:12px">🔓</div>
-                <div class="lst-text"><div class="lst-title">IDOR/BOLA</div><div class="lst-sub">Insecure Direct Object Reference</div></div>
-                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
-            </div>
-            <div class="lst glass" style="margin-bottom:6px">
-                <div class="lst-icon" style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:12px">⚡</div>
-                <div class="lst-text"><div class="lst-title">Rate Limit Bypass</div><div class="lst-sub">API rate limit circumvention</div></div>
-                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
-            </div>
-            <div class="lst glass" style="margin-bottom:6px">
-                <div class="lst-icon" style="background:rgba(168,85,247,0.15);color:var(--purple);font-size:12px">🔐</div>
-                <div class="lst-text"><div class="lst-title">Access Control</div><div class="lst-sub">Broken access control vulnerability</div></div>
-                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
-            </div>
-            <div class="lst glass" style="margin-bottom:6px">
-                <div class="lst-icon" style="background:rgba(0,255,136,0.15);color:var(--green);font-size:12px">🌐</div>
-                <div class="lst-text"><div class="lst-title">CORS Misconfig</div><div class="lst-sub">Cross-Origin misconfiguration</div></div>
-                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
-            </div>
-            <div class="lst glass" style="margin-bottom:6px">
-                <div class="lst-icon" style="background:rgba(0,243,255,0.15);color:var(--cyan);font-size:12px">🎭</div>
-                <div class="lst-text"><div class="lst-title">CSRF</div><div class="lst-sub">Cross-Site Request Forgery</div></div>
-                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- MODAL -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
@@ -745,65 +637,9 @@ function addNewSkill(){
 </div>
 
 <script>
-
-// ─── Pull-to-Refresh ───
-let touchStartY = 0;
-let isPulling = false;
-
-document.addEventListener('touchstart', (e) => {
-    if(window.scrollY === 0) touchStartY = e.touches[0].clientY;
-});
-
-document.addEventListener('touchmove', (e) => {
-    const diff = e.touches[0].clientY - touchStartY;
-    if(diff > 80 && window.scrollY === 0 && !isPulling){
-        isPulling = true;
-        showToast('🔄 در حال بروزرسانی...');
-        syncData().then(()=>{
-            showToast('✅ بروزرسانی شد!');
-            isPulling = false;
-        });
-    }
-});
-
-document.addEventListener('touchend', () => { isPulling = false; });
-
 // ─── Telegram ───
 const tg = window.Telegram?.WebApp;
 if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); }
-
-
-// ─── Live Logs ───
-function openLogs(){
-    haptic('light');
-    document.getElementById('logsModal').classList.add('show');
-    refreshLogs();
-}
-
-function refreshLogs(){
-    const container = document.getElementById('logContainer');
-    if(!container) return;
-    const now = new Date().toLocaleTimeString('fa-IR');
-    const newLog = document.createElement('div');
-    newLog.style.color = 'var(--cyan)';
-    newLog.textContent = '[SYNC] ' + now + ' - data.json refreshed';
-    container.appendChild(newLog);
-    container.scrollTop = container.scrollHeight;
-}
-
-// ─── Memory Explorer ───
-function openMemory(){
-    haptic('light');
-    document.getElementById('memoryModal').classList.add('show');
-}
-
-function filterMemory(query){
-    const items = document.querySelectorAll('#memoryList .lst');
-    items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(query.toLowerCase()) ? 'flex' : 'none';
-    });
-}
 
 // ─── Haptic ───
 function haptic(s='light'){ try{ tg?.HapticFeedback?.impactOccurred?.(s); }catch(e){} }
@@ -1067,97 +903,13 @@ window.addEventListener('load', ()=>{
         });
     });
 });
-
-// ─── Chat Management ───
-function openChatHistory(id){
-    haptic('light');
-    showToast('باز کردن چت #' + id);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_open', id:id}));
-}
-
-function deleteChat(id){
-    doConfirm('حذف چت #' + id);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_delete', id:id}));
-    // Remove from UI
-    event.target.closest('.lst').style.display='none';
-}
-
-function createNewChatSession(){
-    const title = document.getElementById('chatTitleInput')?.value || 'چت جدید';
-    const model = document.getElementById('chatModelSelect')?.value || 'hermes-core';
-    haptic('medium');
-    showToast('✅ چت جدید ساخته شد: ' + title);
-    if(tg?.sendData) tg.sendData(JSON.stringify({action:'chat_create', title:title, model:model}));
-}
-
-// ─── Cron Job Creator ───
-function createCronJob(){
-    const name = document.getElementById('cronNameInput')?.value;
-    const expr = document.getElementById('cronExprInput')?.value;
-    const handler = document.getElementById('cronHandlerInput')?.value;
-    const deliver = document.getElementById('cronDeliverInput')?.value;
-    
-    if(!name || !expr){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و زمان‌بندی رو پر کنید');
-        return;
-    }
-    
-    haptic('notificationOccurred');
-    showToast('✅ کرون‌جاب ساخته شد: ' + name);
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'cron_create',
-            name:name,
-            schedule:expr,
-            script:handler,
-            deliver:deliver
-        }));
-    }
-}
-
-// ─── Skill Builder ───
-function addNewSkill(){
-    const name = document.getElementById('skillNameInput')?.value;
-    const desc = document.getElementById('skillDescInput')?.value;
-    const path = document.getElementById('skillPathInput')?.value;
-    const trigger = document.getElementById('skillTriggerInput')?.value;
-    
-    if(!name || !path){
-        haptic('heavy');
-        showToast('⚠️ لطفاً نام و مسیر فایل رو پر کنید');
-        return;
-    }
-    
-    haptic('notificationOccurred');
-    showToast('✅ مهارت جدید اضافه شد: ' + name);
-    
-    // Add to skills data
-    if(APP_DATA?.skills){
-        APP_DATA.skills.push({name:name, desc:desc||'مهارت جدید', active:true});
-        renderSkills();
-    }
-    
-    if(tg?.sendData){
-        tg.sendData(JSON.stringify({
-            action:'skill_create',
-            name:name,
-            desc:desc,
-            path:path,
-            trigger:trigger
-        }));
-    }
-}
-
 </script>
 
 <!-- HELP MODAL -->
 <div class="modal-bg" id="helpModal" onclick="if(event.target===this)this.classList.remove('show')">
     <div class="modal-box">
         <div class="modal-handle"></div>
-        <h3 style="font-size:16px;font-weight:700;color:var(--cyan);margin-bottom:4px">📖 راهنمای کامل Hermes Agent</h3>
-        <p style="font-size:10px;color:#555;margin-bottom:12px">تمام دستورات و توضیحات کامل</p>
+        <h3 style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px">📖 راهنمای کامل Hermes Agent</h3>
         <div style="font-size:10px;color:#888;margin-bottom:12px;line-height:1.8">
             هرمس یک دستیار هوش مصنوعی پیشرفته هست که می‌تونه کارهای زیادی انجام بده. در زیر لیست کامل دستورات رو می‌بینید:
         </div>
@@ -1203,27 +955,6 @@ function addNewSkill(){
             <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/aisos run</span><span style="color:#666;font-size:9px"> — اجرای AISOS Engine</span></div>
         </div>
 
-        
-        <div style="margin-bottom:10px">
-            <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">🌐 زبان و تنظیمات</div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/language [fa|en]</span><br><span style="color:#666;font-size:9px">تغییر زبان مکالمه. فارسی پیش‌فرض هست.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/clear</span><br><span style="color:#666;font-size:9px">پاک کردن تاریخچه چت فعلی.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/session</span><br><span style="color:#666;font-size:9px">نمایش اطلاعات جلسه فعلی.</span></div>
-        </div>
-
-        <div style="margin-bottom:10px">
-            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">🛠️ ابزارها</div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/terminal [command]</span><br><span style="color:#666;font-size:9px">اجرای دستور ترمینال.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/file [read|write] [path]</span><br><span style="color:#666;font-size:9px">خواندن یا نوشتن فایل.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/search [query]</span><br><span style="color:#666;font-size:9px">جستجو در اینترنت.</span></div>
-        </div>
-
-        <div style="margin-bottom:10px">
-            <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:6px">📊 اطلاعات</div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/whoami</span><br><span style="color:#666;font-size:9px">نمایش اطلاعات کاربر.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/history</span><br><span style="color:#666;font-size:9px">تاریخچه دستورات اجرا شده.</span></div>
-            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/stats</span><br><span style="color:#666;font-size:9px">آمار کلی استفاده.</span></div>
-        </div>
         <button class="btn btn-cyan" onclick="document.getElementById('helpModal').classList.remove('show')" style="margin-top:8px">بستن راهنما</button>
     </div>
 </div>
@@ -1278,6 +1009,45 @@ function addNewSkill(){
         </div>
 
         <button class="btn btn-cyan" onclick="document.getElementById('statusModal').classList.remove('show')">بستن</button>
+    </div>
+</div>
+
+
+<!-- Live Logs Terminal Modal -->
+<div id="logsModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
+        <div class="modal-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+            <h3 style="font-size:12px;font-weight:700;color:var(--cyan);font-family:monospace">📟 HERMES LIVE LOGS</h3>
+            <button onclick="document.getElementById('logsModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
+        </div>
+        <div id="logContainer" style="flex:1;background:#000;border-radius:12px;padding:10px;margin:10px 0;font-family:monospace;font-size:10px;color:var(--green);overflow-y:auto;border:1px solid var(--border);direction:ltr;text-align:left">
+            <div style="color:#555">[SYSTEM] Hermes Core v3.2 initialized...</div>
+            <div style="color:var(--green)">[OK] Gateway connected to Telegram</div>
+            <div style="color:var(--cyan)">[CRON] Smart Home Radar scheduled for 13:00</div>
+            <div style="color:var(--gold)">[MEMORY] AISOS DB: 10 records loaded</div>
+            <div style="color:var(--purple)">[SYNC] data.json updated successfully</div>
+        </div>
+        <button class="btn btn-cyan" onclick="refreshLogs()" style="margin-top:8px">🔄 بروزرسانی لاگ‌ها</button>
+    </div>
+</div>
+
+<!-- Memory Explorer Modal -->
+<div id="memoryModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
+        <div class="modal-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+            <h3 style="font-size:12px;font-weight:700;color:var(--purple)">🧠 مدیریت حافظه AISOS</h3>
+            <button onclick="document.getElementById('memoryModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
+        </div>
+        <input type="text" id="memorySearch" placeholder="🔍 جستجو در داده‌ها..." class="inp" style="margin:10px 0;color:var(--cyan)" oninput="filterMemory(this.value)">
+        <div id="memoryList" style="flex:1;overflow-y:auto">
+            <div class="lst glass" style="margin-bottom:6px"><div class="lst-icon" style="background:rgba(255,71,87,0.15);color:var(--red);font-size:12px">🔓</div><div class="lst-text"><div class="lst-title">IDOR/BOLA</div><div class="lst-sub">Insecure Direct Object Reference</div></div><button onclick="this.closest('.lst').style.display='none';showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button></div>
+            <div class="lst glass" style="margin-bottom:6px"><div class="lst-icon" style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:12px">⚡</div><div class="lst-text"><div class="lst-title">Rate Limit Bypass</div><div class="lst-sub">API rate limit circumvention</div></div><button onclick="this.closest('.lst').style.display='none';showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button></div>
+            <div class="lst glass" style="margin-bottom:6px"><div class="lst-icon" style="background:rgba(168,85,247,0.15);color:var(--purple);font-size:12px">🔐</div><div class="lst-text"><div class="lst-title">Access Control</div><div class="lst-sub">Broken access control</div></div><button onclick="this.closest('.lst').style.display='none';showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button></div>
+            <div class="lst glass" style="margin-bottom:6px"><div class="lst-icon" style="background:rgba(0,255,136,0.15);color:var(--green);font-size:12px">🌐</div><div class="lst-text"><div class="lst-title">CORS Misconfig</div><div class="lst-sub">Cross-Origin misconfiguration</div></div><button onclick="this.closest('.lst').style.display='none';showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button></div>
+            <div class="lst glass" style="margin-bottom:6px"><div class="lst-icon" style="background:rgba(0,243,255,0.15);color:var(--cyan);font-size:12px">🎭</div><div class="lst-text"><div class="lst-title">CSRF</div><div class="lst-sub">Cross-Site Request Forgery</div></div><button onclick="this.closest('.lst').style.display='none';showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button></div>
+        </div>
     </div>
 </div>
 
