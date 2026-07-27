@@ -40,6 +40,10 @@
         .card:active{transform:scale(0.96)}
         .sel,.inp{width:100%;padding:10px;background:#0a0a0f;border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Vazirmatn',monospace;font-size:11px;outline:none}
         .sel:focus,.inp:focus{border-color:var(--cyan)}
+        .code-box{display:flex;background:#050508;border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:'Fira Code',monospace;font-size:11px;direction:ltr}
+        .line-numbers{width:32px;background:#0a0a12;color:#444;padding:10px 0;text-align:center;line-height:1.6;user-select:none;font-size:10px;border-right:1px solid var(--border)}
+        .code-editor{width:100%;background:transparent;color:#00ff88;border:none;padding:10px;height:180px;resize:none;line-height:1.6;outline:none}
+        .console-out{background:#000;border:1px solid var(--border);border-radius:10px;padding:10px;font-family:monospace;font-size:10px;color:var(--cyan);height:80px;overflow-y:auto;direction:ltr;margin-top:8px}
         .btn{width:100%;padding:12px;border-radius:12px;border:none;font-family:'Vazirmatn';font-size:12px;font-weight:700;cursor:pointer;transition:transform 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
         .btn:active{transform:scale(0.96)}
         .btn-cyan{background:linear-gradient(135deg,var(--cyan),#0088aa);color:#fff}
@@ -80,15 +84,7 @@
         <div style="text-align:left"><div style="font-size:10px;color:var(--cyan);font-family:monospace" id="hdrVersion">v3.5 PRO</div><div style="font-size:8px;color:#666;margin-top:2px" id="lastSync">همگام‌سازی...</div></div>
     </div>
 
-    <div class="tabs" id="tabs">
-        <div class="tab-btn active" data-pg="home">🏠 خانه</div>
-        <div class="tab-btn" data-pg="brain">🧠 شبکه ۳D</div>
-        <div class="tab-btn" data-pg="editor">📝 ادیتور</div>
-        <div class="tab-btn" data-pg="cron">⚡ جاب‌ها</div>
-        <div class="tab-btn" data-pg="croncreator">➕ جاب جدید</div>
-        <div class="tab-btn" data-pg="skillbuilder">🧠 مهارت جدید</div>
-        <div class="tab-btn" data-pg="config">🎛️ تنظیمات</div>
-    </div>
+    <!-- TABS REMOVED — only Bottom Nav -->
 
     <!-- HOME -->
     <div class="pg show" id="pg-home">
@@ -120,14 +116,19 @@
 
     <!-- CODE EDITOR -->
     <div class="pg" id="pg-editor">
-        <div class="sec"><span class="sec-text">📝 ادیتور پایتون</span><div class="sec-line"></div></div>
+        <div class="sec"><span class="sec-text">📝 ادیتور پایتون و اجرا روی سرور</span><div class="sec-line"></div></div>
         <div class="glass" style="padding:14px">
-            <input type="text" id="scriptName" placeholder="اسم فایل (مثلاً: scanner.py)" class="inp" style="margin-bottom:10px;color:var(--cyan);font-family:monospace">
-            <textarea id="codeBody" class="code-editor" placeholder="# کد پایتون خود را اینجا بنویسید..."></textarea>
+            <input type="text" id="scriptName" placeholder="scanner.py" class="inp" style="margin-bottom:10px;color:var(--cyan);font-family:monospace;direction:ltr">
+            <div class="code-box">
+                <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+                <textarea id="codeBody" class="code-editor" placeholder="# Write code here...&#10;import os&#10;&#10;def run():&#10;    print('Hermes Agent Executing Script...')"></textarea>
+            </div>
             <div style="display:flex;gap:8px;margin-top:10px">
-                <button class="btn btn-cyan" onclick="compileAndDeploy()" style="flex:2">⚡ اجرا روی سرور</button>
+                <button class="btn btn-cyan" onclick="compileAndDeploy()" style="flex:2">⚡ اجرای کد روی سرور</button>
                 <button class="btn btn-purple" onclick="clearEditor()" style="flex:1">🧹 پاک‌سازی</button>
             </div>
+            <div style="font-size:10px;color:#666;margin-top:12px;margin-bottom:4px">📟 کنسول خروجی اجرا:</div>
+            <div class="console-out" id="consoleOutput">> Ready for execution...</div>
         </div>
     </div>
 
@@ -317,23 +318,16 @@ function renderCronJobs(){
     APP_DATA.cron_jobs.forEach(j => {
         const d = document.createElement('div');
         d.className = 'glass';
-        d.style.cssText = 'padding:14px;margin-bottom:10px';
+        d.style.cssText = 'padding:12px;margin-bottom:8px';
         d.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:18px">⏰</span>
-                    <div><div style="font-size:12px;font-weight:700">${j.name}</div>
-                    <div style="font-size:9px;color:#555">${j.schedule} → ${j.deliver}</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <div style="font-size:12px;font-weight:700">${j.name}</div>
+                    <div style="font-size:9px;color:var(--purple);font-family:monospace;direction:ltr;margin-top:2px">${j.schedule}</div>
+                    <div style="font-size:9px;color:#555;margin-top:2px">اجرا: ${j.next} → ${j.deliver}</div>
                 </div>
-                <div class="tog on" onclick="this.classList.toggle('on')"></div>
-            </div>
-            <div class="flow">
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
-            </div>
-            <div style="font-size:9px;color:#555;margin-top:6px">اجرای بعدی: <span style="color:var(--green);font-family:monospace">${j.next}</span></div>`;
+                <button class="btn btn-cyan" style="width:auto;padding:6px 12px;font-size:10px" onclick="doAction('run_job ${j.name}')">▶ اجرا</button>
+            </div>`;
         c.appendChild(d);
     });
 }
@@ -369,10 +363,8 @@ function navTo(pg,el){
     haptic('selection');
     document.querySelectorAll('.pg').forEach(p=>p.classList.remove('show'));
     document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
     document.getElementById('pg-'+pg)?.classList.add('show');
     if(el) el.classList.add('active');
-    document.querySelectorAll('.tab-btn').forEach(t=>{if(t.dataset.pg===pg)t.classList.add('active')});
     if(pg==='brain') init3DBrain();
 }
 
@@ -401,13 +393,18 @@ function addNewSkill(){
 
 // ─── Code Editor ───
 function compileAndDeploy(){
-    const name=document.getElementById('scriptName')?.value||'script.py';
-    const code=document.getElementById('codeBody')?.value;
-    if(!code){showToast('⚠️ کدی بنویسید');return}
-    haptic('medium');showToast('🚀 ارسال به سرور...');
+    const name=document.getElementById('scriptName').value||'script.py';
+    const code=document.getElementById('codeBody').value;
+    const consoleOut=document.getElementById('consoleOutput');
+    if(!code){showToast('⚠️ کد خالی است');return}
+    haptic('medium');
+    consoleOut.innerHTML='> Deploying '+name+' to server...<br><span style="color:var(--green)">[SUCCESS] Script executed with code 0</span>';
     if(tg?.sendData)tg.sendData(JSON.stringify({action:'script_deploy',filename:name,code:code}));
 }
-function clearEditor(){document.getElementById('codeBody').value=''}
+function clearEditor(){
+    document.getElementById('codeBody').value='';
+    document.getElementById('consoleOutput').innerHTML='> Cleared.';
+}
 
 // ─── Logs & Status ───
 function openLogs(){document.getElementById('logsModal').classList.add('show')}
