@@ -152,10 +152,10 @@
         // Update stats
         if(APP_DATA.stats){
             const stats = document.querySelectorAll('[data-end]');
-            if(stats[0]) stats[0].dataset.end = APP_DATA.stats.chats;
-            if(stats[1]) stats[1].dataset.end = APP_DATA.stats.skills_count;
-            if(stats[2]) stats[2].dataset.end = APP_DATA.stats.cron_count;
-            if(stats[3]) stats[3].dataset.end = APP_DATA.stats.memory_count;
+            if(stats[0]){ stats[0].dataset.end = APP_DATA.stats.chats; stats[0].textContent = APP_DATA.stats.chats; }
+            if(stats[1]){ stats[1].dataset.end = APP_DATA.stats.skills_count; stats[1].textContent = APP_DATA.stats.skills_count; }
+            if(stats[2]){ stats[2].dataset.end = APP_DATA.stats.cron_count; stats[2].textContent = APP_DATA.stats.cron_count; }
+            if(stats[3]){ stats[3].dataset.end = APP_DATA.stats.memory_count; stats[3].textContent = APP_DATA.stats.memory_count; }
         }
         
         // Update version
