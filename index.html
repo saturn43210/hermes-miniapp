@@ -419,11 +419,10 @@ document.addEventListener('touchend', () => { isPulling = false; });
     </div>
 
     <!-- ═══════════ CRON JOBS ═══════════ -->
-    <div class="pg" id="pg-cron"><div id="cronList"></div>
+    <div class="pg" id="pg-cron">
         <div class="sec"><span class="sec-icon">⚡</span><span class="sec-text">روند اجرای زنده</span><div class="sec-line"></div></div>
         <div id="cronList"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">💾</span><div><div style="font-size:12px;font-weight:700">Hermes Backup</div><div style="font-size:9px;color:#555">هر ۱۲ ساعت → GitHub</div></div></div>
+    </div>
                 <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle backup')"></div>
             </div>
             <div class="flow">
