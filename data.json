@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-07-27 06:51:54",
-  "version": "3.1",
+  "updated_at": "2026-07-27 10:23:00",
+  "version": "3.2",
   "cron_jobs": [
     {
       "name": "Hermes Backup",
       "schedule": "هر 12 ساعت",
       "status": "active",
-      "next": "12:59",
+      "next": "فعلاً",
       "deliver": "GitHub"
     },
     {
@@ -50,32 +50,7 @@
       "active": true
     },
     {
-      "name": "productivity",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "mlops",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "github",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "media",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "software-development",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "security",
+      "name": "creative",
       "desc": "مهارت Hermes",
       "active": true
     },
@@ -85,22 +60,22 @@
       "active": true
     },
     {
+      "name": "github",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
       "name": "hermes-ops",
       "desc": "مهارت Hermes",
       "active": true
     },
     {
-      "name": "research",
+      "name": "media",
       "desc": "مهارت Hermes",
       "active": true
     },
     {
-      "name": "creative",
-      "desc": "مهارت Hermes",
-      "active": true
-    },
-    {
-      "name": "social-media",
+      "name": "mlops",
       "desc": "مهارت Hermes",
       "active": true
     },
@@ -110,65 +85,48 @@
       "active": true
     },
     {
+      "name": "productivity",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
+      "name": "research",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
+      "name": "security",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
       "name": "smart-home",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
+      "name": "social-media",
+      "desc": "مهارت Hermes",
+      "active": true
+    },
+    {
+      "name": "software-development",
       "desc": "مهارت Hermes",
       "active": true
     }
   ],
-  "memory": {
-    "profile": {},
-    "aisos": {
-      "total_findings": 0,
-      "total_pocs": 0,
-      "categories": [
-        "IDOR",
-        "Rate_Limit_Bypass",
-        "Access_Control",
-        "CORS",
-        "CSRF",
-        "OAuth_Flaws"
-      ]
-    },
-    "total_entries": 0
-  },
   "system": {
-    "hostname": "40adff03ec18",
-    "os": "Linux 6.18.15+deb13-cloud-amd64",
-    "arch": "x86_64",
-    "python": "3.11",
-    "ram_total": "330437 MB",
-    "ram_used": "224353 MB",
-    "ram_percent": 68,
-    "disk_total": "2931 GB",
-    "disk_used": "1087 GB",
+    "ram_total": 330437,
+    "ram_used": 235902,
+    "ram_percent": 71,
+    "disk_total": 2931,
+    "disk_used": 1084,
     "disk_percent": 37
   },
-  "activities": [
-    {
-      "title": "da1e56279b03",
-      "time": "06:28",
-      "type": "cron"
-    },
-    {
-      "title": "ba4f7cb3b5db",
-      "time": "06:28",
-      "type": "cron"
-    },
-    {
-      "title": "71c57160d110",
-      "time": "06:28",
-      "type": "cron"
-    },
-    {
-      "title": "0be78dd913e5",
-      "time": "06:28",
-      "type": "cron"
-    }
-  ],
   "stats": {
     "chats": 4,
     "skills_count": 15,
     "cron_count": 5,
-    "memory_count": 0
+    "memory_count": 10
   }
 }
