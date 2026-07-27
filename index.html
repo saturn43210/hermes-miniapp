@@ -486,8 +486,12 @@ function initBrain(){
     const c = document.getElementById('brainCanvas');
     if(!c) return;
     const ctx = c.getContext('2d');
-    const W = c.width = c.parentElement.clientWidth;
-    const H = c.height = c.parentElement.clientHeight;
+    let W = c.parentElement.clientWidth || 400;
+    let H = c.parentElement.clientHeight || 280;
+    if(W < 50) W = 400;
+    if(H < 50) H = 280;
+    c.width = W;
+    c.height = H;
 
     const nodes = [
         {x:.5,y:.12,name:'Vector DB',color:'#a855f7'},
@@ -582,7 +586,18 @@ function animateStats(){
 // ─── Init ───
 window.addEventListener('load', ()=>{
     animateStats();
-    setTimeout(initBrain, 200);
+    setTimeout(initBrain, 300);
+    // Re-init brain when skills tab shown
+    document.querySelectorAll('.tab-btn').forEach(t=>{
+        t.addEventListener('click', ()=>{
+            if(t.dataset.pg==='brain') setTimeout(initBrain, 150);
+        });
+    });
+    document.querySelectorAll('.bnav-btn').forEach(b=>{
+        b.addEventListener('click', ()=>{
+            setTimeout(initBrain, 150);
+        });
+    });
 });
 </script>
 </body>
