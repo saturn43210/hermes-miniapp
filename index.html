@@ -368,7 +368,6 @@ function navTo(pg,el){
     if(pg==='brain') init3DBrain();
 }
 
-document.querySelectorAll('.tab-btn').forEach(t=>{t.addEventListener('click',function(){navTo(this.dataset.pg,this)})});
 
 // ─── Cron Creator ───
 function createCronJob(){
