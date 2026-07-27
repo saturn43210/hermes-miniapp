@@ -400,11 +400,13 @@ document.querySelectorAll('.tab-btn').forEach(t=>{
 // ─── Actions ───
 function doAction(cmd){
     haptic('medium');
+    showToast('⏳ در حال اجرای: /'+cmd);
     if(tg?.sendData){
-        tg.sendData(JSON.stringify({action:'command', command:cmd}));
-    } else {
-        // Browser mode — show toast
-        showToast('دستور: /'+cmd);
+        try{
+            tg.sendData(JSON.stringify({action:'command', command:cmd}));
+        }catch(e){
+            showToast('خطا در ارسال دستور');
+        }
     }
 }
 
