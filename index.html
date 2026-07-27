@@ -235,11 +235,15 @@ function addNewSkill(){
         // Update stats directly (no animation, just set values)
         if(APP_DATA.stats){
             const s = APP_DATA.stats;
-            const els = document.querySelectorAll('[data-end]');
-            if(els[0]) els[0].textContent = s.chats || 0;
-            if(els[1]) els[1].textContent = s.skills_count || 0;
-            if(els[2]) els[2].textContent = s.cron_count || 0;
-            if(els[3]) els[3].textContent = s.memory_count || 0;
+            // Only update stats in pg-home
+            const homePage = document.getElementById('pg-home');
+            if(homePage){
+                const els = homePage.querySelectorAll('[data-end]');
+                if(els[0]) els[0].textContent = s.chats || 0;
+                if(els[1]) els[1].textContent = s.skills_count || 0;
+                if(els[2]) els[2].textContent = s.cron_count || 0;
+                if(els[3]) els[3].textContent = s.memory_count || 0;
+            }
         }
         
         // Update version badge
@@ -270,8 +274,12 @@ function addNewSkill(){
     
     function renderSkills(){
         if(!APP_DATA?.skills) return;
+        // Only render in pg-brain page
+        const brainPage = document.getElementById('pg-brain');
+        if(!brainPage) return;
         const container = document.getElementById('skillsList');
         if(!container) return;
+        // Clear only the skillsList container
         container.innerHTML = '';
         APP_DATA.skills.forEach((s, i) => {
             const div = document.createElement('div');
@@ -284,8 +292,12 @@ function addNewSkill(){
     
     function renderCronJobs(){
         if(!APP_DATA?.cron_jobs) return;
+        // Only render in pg-cron page
+        const cronPage = document.getElementById('pg-cron');
+        if(!cronPage) return;
         const container = document.getElementById('cronList');
         if(!container) return;
+        // Clear only the cronList container
         container.innerHTML = '';
         APP_DATA.cron_jobs.forEach(j => {
             const div = document.createElement('div');
