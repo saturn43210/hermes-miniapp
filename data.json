@@ -1,33 +1,33 @@
 {
-  "updated_at": "2026-07-27 06:32:22",
+  "updated_at": "2026-07-27 06:45:42",
   "version": "3.1",
   "cron_jobs": [
     {
       "name": "Hermes Backup",
       "schedule": "هر 12 ساعت",
       "status": "active",
-      "next": "09:29",
+      "next": "12:59",
       "deliver": "GitHub"
     },
     {
       "name": "Smart Home Radar",
-      "schedule": "هر روز 09:30",
+      "schedule": "هر روز 13:00",
       "status": "active",
-      "next": "فردا 09:30",
+      "next": "فردا 13:00",
       "deliver": "@hermesagent219"
     },
     {
       "name": "GitHub Gem Hunter",
-      "schedule": "هر روز 10:00",
+      "schedule": "هر روز 13:30",
       "status": "active",
-      "next": "فردا 10:00",
+      "next": "فردا 13:30",
       "deliver": "@hermesagent219"
     },
     {
       "name": "AISOS Engine",
-      "schedule": "هر روز 11:00",
+      "schedule": "هر روز 14:30",
       "status": "active",
-      "next": "فردا 11:00",
+      "next": "فردا 14:30",
       "deliver": "@hermesagent219"
     },
     {
