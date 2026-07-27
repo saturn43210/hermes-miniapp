@@ -235,7 +235,7 @@ if(tg){tg.ready();tg.expand();tg.setHeaderColor('#0a0a0f');tg.setBackgroundColor
 
 function haptic(s){try{tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(s)}catch(e){}}
 
-function doAction(cmd){haptic('medium');showToast('⏳ /'+cmd);if(tg && tg.sendData)try{tg.sendData('/'+cmd)}catch(e){}}
+function doAction(cmd){haptic('medium');showToast('⏳ در حال ارسال...');if(tg&&tg.openTelegramLink){var botUsername='hermesagent219';var msg=encodeURIComponent('/'+cmd);tg.openTelegramLink('https://t.me/'+botUsername+'?start='+msg);showToast('✅ ارسال شد: /'+cmd)}else{showToast('⚠️ لطفاً از ربات استفاده کنید')}}
 
 // === Navigation ===
 function navTo(pg,el){haptic('selection');var pages=document.querySelectorAll('.pg');for(var i=0;i<pages.length;i++)pages[i].classList.remove('show');var btns=document.querySelectorAll('.bnav-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');var p=document.getElementById('pg-'+pg);if(p)p.classList.add('show');if(el)el.classList.add('active');if(pg==='brain')init3DBrain()}
