@@ -423,65 +423,7 @@ document.addEventListener('touchend', () => { isPulling = false; });
         <div class="sec"><span class="sec-icon">⚡</span><span class="sec-text">روند اجرای زنده</span><div class="sec-line"></div></div>
         <div id="cronList"></div>
     </div>
-                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle backup')"></div>
-            </div>
-            <div class="flow">
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
-            </div>
-            <div class="flow-labels"><span>Trigger</span><span>Fetch</span><span>Hermes AI</span><span>Push</span></div>
-            <div style="font-size:9px;color:#555;margin-top:6px">اجرای بعدی: <span style="color:var(--green);font-family:monospace">۱۳:۱۹</span></div>
-        </div>
 
-        <!-- Smart Home -->
-        <div class="glass" style="padding:14px;margin-bottom:10px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🏠</span><div><div style="font-size:12px;font-weight:700">Smart Home Radar</div><div style="font-size:9px;color:#555">هر روز ۰۹:۳۰ → کانال</div></div></div>
-                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle smarthome')"></div>
-            </div>
-            <div class="flow">
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
-            </div>
-            <div class="flow-labels"><span>Trigger</span><span>Web Scan</span><span>Hermes AI</span><span>Channel</span></div>
-        </div>
-
-        <!-- Gem Hunter -->
-        <div class="glass" style="padding:14px;margin-bottom:10px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔍</span><div><div style="font-size:12px;font-weight:700">GitHub Gem Hunter</div><div style="font-size:9px;color:#555">هر روز ۱۰:۰۰ → کانال</div></div></div>
-                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle hunter')"></div>
-            </div>
-            <div class="flow">
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
-            </div>
-            <div class="flow-labels"><span>Trigger</span><span>GitHub API</span><span>Hermes AI</span><span>Channel</span></div>
-        </div>
-
-        <!-- AISOS -->
-        <div class="glass" style="padding:14px;margin-bottom:14px;border-color:rgba(168,85,247,0.3)">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🎯</span><div><div style="font-size:12px;font-weight:700;color:var(--purple)">AISOS Engine</div><div style="font-size:9px;color:#555">هر روز ۱۱:۰۰ → کانال</div></div></div>
-                <div class="tog on" onclick="this.classList.toggle('on'); doAction('cron toggle aisos')"></div>
-            </div>
-            <div class="flow">
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2);animation:pulse 2s infinite">⚙️</div><div class="flow-line"></div>
-                <div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div>
-            </div>
-            <div class="flow-labels"><span>Trigger</span><span>GitHub/H1</span><span>AISOS AI</span><span>Channel</span></div>
-        </div>
-
-        <button class="btn btn-cyan" onclick="doAction('cron run all')" style="font-size:13px">▶ اجرای دستی تمام جاب‌ها</button>
-    </div>
 
     <!-- ═══════════ CONFIG ═══════════ -->
     <div class="pg" id="pg-config">
