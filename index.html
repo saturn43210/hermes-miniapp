@@ -255,13 +255,16 @@ function renderCronJobs(){
         row.style.cssText='display:flex;justify-content:space-between;align-items:center';
         var info=document.createElement('div');
         info.innerHTML='<div style="font-size:12px;font-weight:700">'+j.name+'</div><div style="font-size:9px;color:var(--purple);font-family:monospace;direction:ltr;margin-top:2px">'+j.schedule+'</div><div style="font-size:9px;color:#555;margin-top:2px">اجرا: '+j.next+' → '+j.deliver+'</div>';
-        var btn=document.createElement('button');
-        btn.className='btn btn-cyan';
-        btn.style.cssText='width:auto;padding:6px 12px;font-size:10px';
-        btn.textContent='▶ اجرا';
-        (function(name){btn.onclick=function(){doAction('run_job '+name)}})(j.name);
+        var btnGroup=document.createElement('div');
+        btnGroup.style.cssText='display:flex;gap:4px';
+        var runBtn=document.createElement('button');
+        runBtn.className='btn btn-cyan';
+        runBtn.style.cssText='width:auto;padding:6px 10px;font-size:10px';
+        runBtn.textContent='▶ اجرا';
+        (function(name){runBtn.onclick=function(){doAction('run_job '+name)}})(j.name);
+        btnGroup.appendChild(runBtn);
         row.appendChild(info);
-        row.appendChild(btn);
+        row.appendChild(btnGroup);
         d.appendChild(row);
         c.appendChild(d);
     }
@@ -309,9 +312,42 @@ function showToast(msg){var t=document.createElement('div');t.style.cssText='pos
 var animId=null;
 function init3DBrain(){var c=document.getElementById('brainCanvas3D');if(!c)return;var ctx=c.getContext('2d');var W=c.parentElement.clientWidth||360,H=c.parentElement.clientHeight||260;c.width=W;c.height=H;var nodes=[];for(var i=0;i<20;i++)nodes.push({x:(Math.random()-.5)*200,y:(Math.random()-.5)*200,z:(Math.random()-.5)*200,color:i%2===0?'#00f3ff':'#a855f7'});var aY=.005,aX=.003;function proj(p){var f=150,s=f/(f+p.z+150);return{x:p.x*s+W/2,y:p.y*s+H/2,s:s}}function render(){ctx.clearRect(0,0,W,H);for(var i=0;i<nodes.length;i++){var p=nodes[i];var cY=Math.cos(aY),sY=Math.sin(aY),x1=p.x*cY-p.z*sY,z1=p.z*cY+p.x*sY;var cX=Math.cos(aX),sX=Math.sin(aX);p.y=p.y*cX-z1*sX;p.z=z1*cX+p.y*sX;p.x=x1}for(var i=0;i<nodes.length;i++)for(var j=i+1;j<nodes.length;j++){var p1=proj(nodes[i]),p2=proj(nodes[j]),dist=Math.hypot(p1.x-p2.x,p1.y-p2.y);if(dist<80){ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.strokeStyle='rgba(0,243,255,'+(1-dist/80)+')';ctx.lineWidth=.6;ctx.stroke()}}for(var i=0;i<nodes.length;i++){var pp=proj(nodes[i]);ctx.beginPath();ctx.arc(pp.x,pp.y,3*pp.s,0,Math.PI*2);ctx.fillStyle=nodes[i].color;ctx.fill()}animId=requestAnimationFrame(render)}if(animId)cancelAnimationFrame(animId);render()}
 
+// === Render System Stats & Header ===
+function renderStats(){
+    if(!RAW_DATA) return;
+    if(RAW_DATA.stats){
+        document.getElementById('stChats').textContent = RAW_DATA.stats.chats || 0;
+        document.getElementById('stSkills').textContent = RAW_DATA.stats.skills_count || 0;
+        document.getElementById('stJobs').textContent = RAW_DATA.stats.cron_count || 0;
+        document.getElementById('stMemory').textContent = RAW_DATA.stats.memory_count || 0;
+    }
+    if(RAW_DATA.system){
+        var sys = RAW_DATA.system;
+        document.getElementById('ramVal').textContent = sys.ram_percent + '%';
+        document.getElementById('ramBar').style.width = sys.ram_percent + '%';
+        document.getElementById('diskVal').textContent = sys.disk_percent + '%';
+        document.getElementById('diskBar').style.width = sys.disk_percent + '%';
+    }
+}
+
 // === INIT ===
 renderCronJobs();
 renderSkills();
+renderStats();
+
+// === Dynamic Line Numbers for Code Editor ===
+var codeEditor = document.getElementById('codeBody');
+var lineNumBox = document.querySelector('.line-numbers');
+if(codeEditor && lineNumBox){
+    codeEditor.addEventListener('input', function(){
+        var lines = codeEditor.value.split('\n').length;
+        var lineHTML = '';
+        for(var i = 1; i <= Math.max(lines, 8); i++){
+            lineHTML += i + '<br>';
+        }
+        lineNumBox.innerHTML = lineHTML;
+    });
+}
 </script>
 </body>
 </html>
