@@ -680,15 +680,130 @@ function addNewSkill(){
     </div>
 </div>
 
+
+<!-- Live Logs Terminal Modal -->
+<div id="logsModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
+        <div class="modal-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+            <h3 style="font-size:12px;font-weight:700;color:var(--cyan);font-family:monospace">📟 HERMES LIVE LOGS</h3>
+            <button onclick="document.getElementById('logsModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
+        </div>
+        <div id="logContainer" style="flex:1;background:#000;border-radius:12px;padding:10px;margin:10px 0;font-family:monospace;font-size:10px;color:var(--green);overflow-y:auto;border:1px solid var(--border);direction:ltr;text-align:left">
+            <div style="color:#555">[SYSTEM] Hermes Core v3.2 initialized...</div>
+            <div style="color:var(--green)">[OK] Gateway connected to Telegram</div>
+            <div style="color:var(--cyan)">[CRON] Smart Home Radar scheduled for 13:00</div>
+            <div style="color:var(--gold)">[MEMORY] AISOS DB: 10 records loaded</div>
+            <div style="color:var(--purple)">[SYNC] data.json updated successfully</div>
+        </div>
+        <button class="btn btn-cyan" onclick="refreshLogs()" style="margin-top:8px">🔄 بروزرسانی لاگ‌ها</button>
+    </div>
+</div>
+
+<!-- Memory Explorer Modal -->
+<div id="memoryModal" class="modal-bg" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box" style="height:80vh;display:flex;flex-direction:column">
+        <div class="modal-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+            <h3 style="font-size:12px;font-weight:700;color:var(--purple)">🧠 مدیریت حافظه AISOS</h3>
+            <button onclick="document.getElementById('memoryModal').classList.remove('show')" style="background:none;border:none;color:#666;font-size:18px">&times;</button>
+        </div>
+        <input type="text" id="memorySearch" placeholder="🔍 جستجو در داده‌ها..." class="inp" style="margin:10px 0;color:var(--cyan)" oninput="filterMemory(this.value)">
+        <div id="memoryList" style="flex:1;overflow-y:auto">
+            <div class="lst glass" style="margin-bottom:6px">
+                <div class="lst-icon" style="background:rgba(255,71,87,0.15);color:var(--red);font-size:12px">🔓</div>
+                <div class="lst-text"><div class="lst-title">IDOR/BOLA</div><div class="lst-sub">Insecure Direct Object Reference</div></div>
+                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
+            </div>
+            <div class="lst glass" style="margin-bottom:6px">
+                <div class="lst-icon" style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:12px">⚡</div>
+                <div class="lst-text"><div class="lst-title">Rate Limit Bypass</div><div class="lst-sub">API rate limit circumvention</div></div>
+                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
+            </div>
+            <div class="lst glass" style="margin-bottom:6px">
+                <div class="lst-icon" style="background:rgba(168,85,247,0.15);color:var(--purple);font-size:12px">🔐</div>
+                <div class="lst-text"><div class="lst-title">Access Control</div><div class="lst-sub">Broken access control vulnerability</div></div>
+                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
+            </div>
+            <div class="lst glass" style="margin-bottom:6px">
+                <div class="lst-icon" style="background:rgba(0,255,136,0.15);color:var(--green);font-size:12px">🌐</div>
+                <div class="lst-text"><div class="lst-title">CORS Misconfig</div><div class="lst-sub">Cross-Origin misconfiguration</div></div>
+                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
+            </div>
+            <div class="lst glass" style="margin-bottom:6px">
+                <div class="lst-icon" style="background:rgba(0,243,255,0.15);color:var(--cyan);font-size:12px">🎭</div>
+                <div class="lst-text"><div class="lst-title">CSRF</div><div class="lst-sub">Cross-Site Request Forgery</div></div>
+                <button onclick="this.closest('.lst').style.display='none'; showToast('🗑️ حذف شد')" style="background:none;border:none;color:var(--red);font-size:14px;padding:6px">🗑️</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
     <div class="modal-box"><div class="modal-handle"></div><div id="modalBody"></div></div>
 </div>
 
 <script>
+
+// ─── Pull-to-Refresh ───
+let touchStartY = 0;
+let isPulling = false;
+
+document.addEventListener('touchstart', (e) => {
+    if(window.scrollY === 0) touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchmove', (e) => {
+    const diff = e.touches[0].clientY - touchStartY;
+    if(diff > 80 && window.scrollY === 0 && !isPulling){
+        isPulling = true;
+        showToast('🔄 در حال بروزرسانی...');
+        syncData().then(()=>{
+            showToast('✅ بروزرسانی شد!');
+            isPulling = false;
+        });
+    }
+});
+
+document.addEventListener('touchend', () => { isPulling = false; });
+
 // ─── Telegram ───
 const tg = window.Telegram?.WebApp;
 if(tg){ tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0f'); tg.setBackgroundColor('#0a0a0f'); }
+
+
+// ─── Live Logs ───
+function openLogs(){
+    haptic('light');
+    document.getElementById('logsModal').classList.add('show');
+    refreshLogs();
+}
+
+function refreshLogs(){
+    const container = document.getElementById('logContainer');
+    if(!container) return;
+    const now = new Date().toLocaleTimeString('fa-IR');
+    const newLog = document.createElement('div');
+    newLog.style.color = 'var(--cyan)';
+    newLog.textContent = '[SYNC] ' + now + ' - data.json refreshed';
+    container.appendChild(newLog);
+    container.scrollTop = container.scrollHeight;
+}
+
+// ─── Memory Explorer ───
+function openMemory(){
+    haptic('light');
+    document.getElementById('memoryModal').classList.add('show');
+}
+
+function filterMemory(query){
+    const items = document.querySelectorAll('#memoryList .lst');
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query.toLowerCase()) ? 'flex' : 'none';
+    });
+}
 
 // ─── Haptic ───
 function haptic(s='light'){ try{ tg?.HapticFeedback?.impactOccurred?.(s); }catch(e){} }
