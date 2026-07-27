@@ -137,26 +137,35 @@
     
     async function syncData(){
         try{
-            const r = await fetch(DATA_URL + '?t=' + Date.now());
+            const r = await fetch(DATA_URL + '?t=' + Date.now(), {cache: 'no-store'});
             APP_DATA = await r.json();
             updateUI();
             console.log('✅ Data synced:', APP_DATA.updated_at);
         }catch(e){
-            console.log('⚠️ Sync failed, using defaults');
+            console.log('⚠️ Sync failed:', e);
         }
     }
     
     function updateUI(){
         if(!APP_DATA) return;
         
-        // Update stats
+        // Update stats directly (no animation, just set values)
         if(APP_DATA.stats){
-            const stats = document.querySelectorAll('[data-end]');
-            if(stats[0]){ stats[0].dataset.end = APP_DATA.stats.chats; stats[0].textContent = APP_DATA.stats.chats; }
-            if(stats[1]){ stats[1].dataset.end = APP_DATA.stats.skills_count; stats[1].textContent = APP_DATA.stats.skills_count; }
-            if(stats[2]){ stats[2].dataset.end = APP_DATA.stats.cron_count; stats[2].textContent = APP_DATA.stats.cron_count; }
-            if(stats[3]){ stats[3].dataset.end = APP_DATA.stats.memory_count; stats[3].textContent = APP_DATA.stats.memory_count; }
+            const s = APP_DATA.stats;
+            const els = document.querySelectorAll('[data-end]');
+            if(els[0]) els[0].textContent = s.chats || 0;
+            if(els[1]) els[1].textContent = s.skills_count || 0;
+            if(els[2]) els[2].textContent = s.cron_count || 0;
+            if(els[3]) els[3].textContent = s.memory_count || 0;
         }
+        
+        // Update version badge
+        const vb = document.getElementById('hdrVersion');
+        if(vb && APP_DATA.version) vb.textContent = 'v' + APP_DATA.version;
+        
+        // Update last sync
+        const ls = document.getElementById('lastSync');
+        if(ls && APP_DATA.updated_at) ls.textContent = 'بروز: ' + APP_DATA.updated_at.split(' ')[1];
         
         // Update version
         const v = document.querySelector('.hdr-badge');
@@ -217,11 +226,11 @@
     }
     
     // Auto sync every 5 minutes
-    setInterval(syncData, 300000);
+    setInterval(syncData, 120000);
     
     // Initial sync
     window.addEventListener('load', () => {
-        setTimeout(syncData, 500);
+        syncData();
     });
     </script>
 
