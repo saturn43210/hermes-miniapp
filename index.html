@@ -235,7 +235,7 @@ if(tg){tg.ready();tg.expand();tg.setHeaderColor('#0a0a0f');tg.setBackgroundColor
 
 function haptic(s){try{tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(s)}catch(e){}}
 
-function doAction(cmd){haptic('medium');showToast('⏳ /'+cmd);if(tg && tg.sendData)try{tg.sendData(JSON.stringify({action:'command',command:cmd}))}catch(e){}}
+function doAction(cmd){haptic('medium');showToast('⏳ /'+cmd);if(tg && tg.sendData)try{tg.sendData('/'+cmd)}catch(e){}}
 
 // === Navigation ===
 function navTo(pg,el){haptic('selection');var pages=document.querySelectorAll('.pg');for(var i=0;i<pages.length;i++)pages[i].classList.remove('show');var btns=document.querySelectorAll('.bnav-btn');for(var i=0;i<btns.length;i++)btns[i].classList.remove('active');var p=document.getElementById('pg-'+pg);if(p)p.classList.add('show');if(el)el.classList.add('active');if(pg==='brain')init3DBrain()}
@@ -292,13 +292,13 @@ function renderSkills(){
 }
 
 // === Cron Creator ===
-function createCron(){var n=document.getElementById('cronNameInput').value;var e=document.getElementById('cronExprInput').value;if(!n||!e){haptic('heavy');showToast('⚠️ نام و زمان‌بندی لازمه');return}haptic('notificationOccurred');showToast('✅ جاب ساخته شد: '+n);if(tg&&tg.sendData)tg.sendData(JSON.stringify({action:'cron_create',name:n,schedule:e}))}
+function createCron(){var n=document.getElementById('cronNameInput').value;var e=document.getElementById('cronExprInput').value;if(!n||!e){haptic('heavy');showToast('⚠️ نام و زمان‌بندی لازمه');return}haptic('notificationOccurred');showToast('✅ جاب ساخته شد: '+n);if(tg&&tg.sendData)tg.sendData('/cron_create '+n+' "'+e+'"')}
 
 // === Skill Builder ===
-function addSkill(){var n=document.getElementById('skillNameInput').value;if(!n){haptic('heavy');showToast('⚠️ نام مهارت لازمه');return}haptic('notificationOccurred');showToast('✅ مهارت: '+n);if(tg&&tg.sendData)tg.sendData(JSON.stringify({action:'skill_create',name:n}))}
+function addSkill(){var n=document.getElementById('skillNameInput').value;if(!n){haptic('heavy');showToast('⚠️ نام مهارت لازمه');return}haptic('notificationOccurred');showToast('✅ مهارت: '+n);if(tg&&tg.sendData)tg.sendData('/skill_create '+n)}
 
 // === Code Editor ===
-function compileAndDeploy(){var name=document.getElementById('scriptName').value||'script.py';var code=document.getElementById('codeBody').value;var co=document.getElementById('consoleOutput');if(!code){showToast('⚠️ کد خالی');return}haptic('medium');co.innerHTML='> Deploying '+name+'...<br><span style="color:var(--green)">[OK] Executed</span>';if(tg&&tg.sendData)tg.sendData(JSON.stringify({action:'script_deploy',filename:name,code:code}))}
+function compileAndDeploy(){var name=document.getElementById('scriptName').value||'script.py';var code=document.getElementById('codeBody').value;var co=document.getElementById('consoleOutput');if(!code){showToast('⚠️ کد خالی');return}haptic('medium');co.innerHTML='> Deploying '+name+'...<br><span style="color:var(--green)">[OK] Executed</span>';if(tg&&tg.sendData)tg.sendData('/run_script '+name)}
 function clearEditor(){document.getElementById('codeBody').value='';document.getElementById('consoleOutput').innerHTML='> Cleared.';}
 
 // === Modals ===
