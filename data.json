@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-27 13:36:07",
+  "updated_at": "2026-07-27 14:38:17",
   "version": "3.2",
   "cron_jobs": [
     {
@@ -117,11 +117,11 @@
   ],
   "system": {
     "ram_total": 330437,
-    "ram_used": 229308,
-    "ram_percent": 69,
+    "ram_used": 231085,
+    "ram_percent": 70,
     "disk_total": 2931,
-    "disk_used": 1079,
-    "disk_percent": 37
+    "disk_used": 1069,
+    "disk_percent": 36
   },
   "stats": {
     "chats": 4,
