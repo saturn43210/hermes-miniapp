@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-27 06:28:00",
+  "updated_at": "2026-07-27 06:32:22",
   "version": "3.1",
   "cron_jobs": [
     {
@@ -29,6 +29,13 @@
       "status": "active",
       "next": "فردا 11:00",
       "deliver": "@hermesagent219"
+    },
+    {
+      "name": "Mini App Data Sync",
+      "schedule": "هر 30 دقیقه",
+      "status": "active",
+      "next": "30 دقیقه دیگر",
+      "deliver": "GitHub Pages"
     }
   ],
   "skills": [
@@ -161,7 +168,7 @@
   "stats": {
     "chats": 4,
     "skills_count": 15,
-    "cron_count": 4,
+    "cron_count": 5,
     "memory_count": 0
   }
 }
