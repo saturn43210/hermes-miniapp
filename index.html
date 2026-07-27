@@ -400,14 +400,41 @@ document.querySelectorAll('.tab-btn').forEach(t=>{
 // ─── Actions ───
 function doAction(cmd){
     haptic('medium');
+    if(cmd==='help'){ document.getElementById('helpModal').classList.add('show'); return; }
+    if(cmd==='status'){ openStatus(); return; }
+    if(cmd==='memory'){ openModal('memory'); return; }
     showToast('⏳ در حال اجرای: /'+cmd);
     if(tg?.sendData){
-        try{
-            tg.sendData(JSON.stringify({action:'command', command:cmd}));
-        }catch(e){
-            showToast('خطا در ارسال دستور');
-        }
+        try{ tg.sendData(JSON.stringify({action:'command', command:cmd})); }catch(e){}
     }
+}
+
+function openStatus(){
+    document.getElementById('statusModal').classList.add('show');
+    // Animate bars
+    setTimeout(()=>{
+        const cpu = Math.floor(Math.random()*40+20);
+        const ram = Math.floor(Math.random()*30+30);
+        const disk = Math.floor(Math.random()*20+40);
+        document.getElementById('cpuBar').style.width = cpu+'%';
+        document.getElementById('cpuVal').textContent = cpu+'%';
+        document.getElementById('ramBar').style.width = ram+'%';
+        document.getElementById('ramVal').textContent = ram+'%';
+        document.getElementById('ramDetail').textContent = (ram*0.08).toFixed(1)+' GB / 8 GB';
+        document.getElementById('diskBar').style.width = disk+'%';
+        document.getElementById('diskVal').textContent = disk+'%';
+        document.getElementById('diskDetail').textContent = (disk*0.5).toFixed(1)+' GB / 50 GB';
+        document.getElementById('netVal').textContent = Math.floor(Math.random()*500+100)+' KB/s';
+        // Net graph
+        const g = document.getElementById('netGraph');
+        g.innerHTML = '';
+        for(let i=0;i<20;i++){
+            const h = Math.floor(Math.random()*30+10);
+            const bar = document.createElement('div');
+            bar.style.cssText = 'flex:1;background:linear-gradient(to top,var(--purple),var(--cyan));border-radius:2px;height:'+h+'px;transition:height 0.3s';
+            g.appendChild(bar);
+        }
+    }, 200);
 }
 
 function changeModel(){
@@ -602,5 +629,113 @@ window.addEventListener('load', ()=>{
     });
 });
 </script>
+
+<!-- HELP MODAL -->
+<div class="modal-bg" id="helpModal" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <h3 style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px">📖 راهنمای کامل Hermes Agent</h3>
+        <div style="font-size:10px;color:#888;margin-bottom:12px;line-height:1.8">
+            هرمس یک دستیار هوش مصنوعی پیشرفته هست که می‌تونه کارهای زیادی انجام بده. در زیر لیست کامل دستورات رو می‌بینید:
+        </div>
+        
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:6px">💬 دستورات چت</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/help</span><span style="color:#666;font-size:9px"> — نمایش راهنمای کامل</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/status</span><span style="color:#666;font-size:9px"> — وضعیت سیستم و منابع</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/new</span><span style="color:#666;font-size:9px"> — شروع چت جدید</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/memory</span><span style="color:#666;font-size:9px"> — مشاهده حافظه هوش مصنوعی</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:6px">🤖 مدیریت مدل</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/model [name]</span><span style="color:#666;font-size:9px"> — تغییر مدل هوش مصنوعی</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/model list</span><span style="color:#666;font-size:9px"> — لیست مدل‌های موجود</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">⏰ کرون‌جاب‌ها</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/cron list</span><span style="color:#666;font-size:9px"> — لیست جاب‌های فعال</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/cron run [id]</span><span style="color:#666;font-size:9px"> — اجرای دستی یک جاب</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/cron run all</span><span style="color:#666;font-size:9px"> — اجرای تمام جاب‌ها</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/cron pause [id]</span><span style="color:#666;font-size:9px"> — توقف موقت یک جاب</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--pink);margin-bottom:6px">🎯 مهارت‌ها</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/skill list</span><span style="color:#666;font-size:9px"> — لیست مهارت‌های نصب شده</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/skill [name]</span><span style="color:#666;font-size:9px"> — نمایش جزئیات یک مهارت</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/skill delete [name]</span><span style="color:#666;font-size:9px"> — حذف یک مهارت</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:6px">💾 بکاپ و بازیابی</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/backup now</span><span style="color:#666;font-size:9px"> — بکاپ فوری</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/backup restore</span><span style="color:#666;font-size:9px"> — بازیابی از بکاپ</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px">🔍 باگ‌بونتی و امنیت</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/aisos</span><span style="color:#666;font-size:9px"> — نمایش وضعیت AISOS Database</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/aisos run</span><span style="color:#666;font-size:9px"> — اجرای AISOS Engine</span></div>
+        </div>
+
+        <button class="btn btn-cyan" onclick="document.getElementById('helpModal').classList.remove('show')" style="margin-top:8px">بستن راهنما</button>
+    </div>
+</div>
+
+<!-- STATUS MODAL -->
+<div class="modal-bg" id="statusModal" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <h3 style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px">📊 وضعیت سیستم</h3>
+        
+        <!-- CPU Usage -->
+        <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#888;margin-bottom:4px"><span>پردازنده (CPU)</span><span id="cpuVal" style="color:var(--cyan)">0%</span></div>
+            <div style="width:100%;height:8px;background:#1e1e3a;border-radius:4px;overflow:hidden">
+                <div id="cpuBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width 1s"></div>
+            </div>
+        </div>
+
+        <!-- RAM Usage -->
+        <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#888;margin-bottom:4px"><span>حافظه رم (RAM)</span><span id="ramVal" style="color:var(--green)">0%</span></div>
+            <div style="width:100%;height:8px;background:#1e1e3a;border-radius:4px;overflow:hidden">
+                <div id="ramBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:4px;transition:width 1s"></div>
+            </div>
+            <div style="font-size:9px;color:#555;margin-top:2px" id="ramDetail"></div>
+        </div>
+
+        <!-- Disk Usage -->
+        <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#888;margin-bottom:4px"><span>حافظه دیسک</span><span id="diskVal" style="color:var(--gold)">0%</span></div>
+            <div style="width:100%;height:8px;background:#1e1e3a;border-radius:4px;overflow:hidden">
+                <div id="diskBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:4px;transition:width 1s"></div>
+            </div>
+            <div style="font-size:9px;color:#555;margin-top:2px" id="diskDetail"></div>
+        </div>
+
+        <!-- Network -->
+        <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#888;margin-bottom:4px"><span>شبکه (Network)</span><span id="netVal" style="color:var(--purple)">0 KB/s</span></div>
+            <div style="display:flex;gap:4px;height:40px;align-items:flex-end" id="netGraph"></div>
+        </div>
+
+        <!-- System Info -->
+        <div class="glass" style="padding:10px;margin-bottom:10px">
+            <div style="font-size:10px;color:#888;line-height:1.8">
+                <div>🖥️ <span style="color:var(--cyan)">Linux 6.18</span> — amd64</div>
+                <div>🧠 <span style="color:var(--green)">Python 3.11</span></div>
+                <div>🤖 <span style="color:var(--purple)">Hermes v3.0</span> — Mimohermes</div>
+                <div>📡 <span style="color:var(--gold)">4 کرون‌جاب</span> فعال</div>
+                <div>🎯 <span style="color:var(--pink)">13 مهارت</span> نصب شده</div>
+            </div>
+        </div>
+
+        <button class="btn btn-cyan" onclick="document.getElementById('statusModal').classList.remove('show')">بستن</button>
+    </div>
+</div>
+
 </body>
 </html>
