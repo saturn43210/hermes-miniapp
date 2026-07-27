@@ -276,12 +276,17 @@
 const DATA_URL = 'https://saturn43210.github.io/hermes-miniapp/data.json';
 let APP_DATA = null;
 
+const INLINE_DATA = {"updated_at": "2026-07-27 13:04:50", "version": "3.2", "cron_jobs": [{"name": "Hermes Backup", "schedule": "هر 12 ساعت", "status": "active", "next": "فعلاً", "deliver": "GitHub"}, {"name": "Smart Home Radar", "schedule": "هر روز 13:00", "status": "active", "next": "فردا 13:00", "deliver": "@hermesagent219"}, {"name": "GitHub Gem Hunter", "schedule": "هر روز 13:30", "status": "active", "next": "فردا 13:30", "deliver": "@hermesagent219"}, {"name": "AISOS Engine", "schedule": "هر روز 14:30", "status": "active", "next": "فردا 14:30", "deliver": "@hermesagent219"}, {"name": "Mini App Data Sync", "schedule": "هر 30 دقیقه", "status": "active", "next": "30 دقیقه دیگر", "deliver": "GitHub Pages"}], "skills": [{"name": "apple", "desc": "مهارت Hermes", "active": true}, {"name": "autonomous-ai-agents", "desc": "مهارت Hermes", "active": true}, {"name": "creative", "desc": "مهارت Hermes", "active": true}, {"name": "email", "desc": "مهارت Hermes", "active": true}, {"name": "github", "desc": "مهارت Hermes", "active": true}, {"name": "hermes-ops", "desc": "مهارت Hermes", "active": true}, {"name": "media", "desc": "مهارت Hermes", "active": true}, {"name": "mlops", "desc": "مهارت Hermes", "active": true}, {"name": "note-taking", "desc": "مهارت Hermes", "active": true}, {"name": "productivity", "desc": "مهارت Hermes", "active": true}, {"name": "research", "desc": "مهارت Hermes", "active": true}, {"name": "security", "desc": "مهارت Hermes", "active": true}, {"name": "smart-home", "desc": "مهارت Hermes", "active": true}, {"name": "social-media", "desc": "مهارت Hermes", "active": true}, {"name": "software-development", "desc": "مهارت Hermes", "active": true}], "system": {"ram_total": 330437, "ram_used": 228137, "ram_percent": 69, "disk_total": 2931, "disk_used": 1094, "disk_percent": 37}, "stats": {"chats": 4, "skills_count": 15, "cron_count": 5, "memory_count": 10}};
+
 async function syncData(){
     try{
         const r = await fetch(DATA_URL + '?t=' + Date.now(), {cache:'no-store'});
         APP_DATA = await r.json();
-        updateUI();
-    }catch(e){ console.log('Sync failed:', e); }
+    }catch(e){
+        console.log('Fetch failed, using inline data');
+        APP_DATA = INLINE_DATA;
+    }
+    updateUI();
 }
 
 function updateUI(){
