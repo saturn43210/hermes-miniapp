@@ -129,6 +129,102 @@
         .bnav-lbl { font-size: 9px; color: #555; }
         .bnav-btn.active .bnav-lbl { color: var(--cyan); }
     </style>
+
+    <script>
+    // ─── Dynamic Data Sync ───
+    const DATA_URL = 'https://saturn43210.github.io/hermes-miniapp/data.json';
+    let APP_DATA = null;
+    
+    async function syncData(){
+        try{
+            const r = await fetch(DATA_URL + '?t=' + Date.now());
+            APP_DATA = await r.json();
+            updateUI();
+            console.log('✅ Data synced:', APP_DATA.updated_at);
+        }catch(e){
+            console.log('⚠️ Sync failed, using defaults');
+        }
+    }
+    
+    function updateUI(){
+        if(!APP_DATA) return;
+        
+        // Update stats
+        if(APP_DATA.stats){
+            const stats = document.querySelectorAll('[data-end]');
+            if(stats[0]) stats[0].dataset.end = APP_DATA.stats.chats;
+            if(stats[1]) stats[1].dataset.end = APP_DATA.stats.skills_count;
+            if(stats[2]) stats[2].dataset.end = APP_DATA.stats.cron_count;
+            if(stats[3]) stats[3].dataset.end = APP_DATA.stats.memory_count;
+        }
+        
+        // Update version
+        const v = document.querySelector('.hdr-badge');
+        if(v && APP_DATA.version) v.textContent = 'v' + APP_DATA.version;
+        
+        // Update last sync time
+        const sync = document.getElementById('lastSync');
+        if(sync && APP_DATA.updated_at) sync.textContent = 'آخرین بروزرسانی: ' + APP_DATA.updated_at;
+        
+        // Render skills dynamically
+        renderSkills();
+        
+        // Render cron jobs dynamically
+        renderCronJobs();
+        
+        // Update system status
+        updateSystemStatus();
+    }
+    
+    function renderSkills(){
+        if(!APP_DATA?.skills) return;
+        const container = document.getElementById('skillsList');
+        if(!container) return;
+        container.innerHTML = '';
+        APP_DATA.skills.forEach((s, i) => {
+            const div = document.createElement('div');
+            div.className = 'lst glass';
+            div.onclick = () => openSkill(i);
+            div.innerHTML = '<div class="lst-icon" style="background:rgba(0,243,255,0.1)">🎯</div><div class="lst-text"><div class="lst-title">' + s.name + '</div><div class="lst-sub">' + s.desc + '</div></div>';
+            container.appendChild(div);
+        });
+    }
+    
+    function renderCronJobs(){
+        if(!APP_DATA?.cron_jobs) return;
+        const container = document.getElementById('cronList');
+        if(!container) return;
+        container.innerHTML = '';
+        APP_DATA.cron_jobs.forEach(j => {
+            const div = document.createElement('div');
+            div.className = 'glass';
+            div.style.cssText = 'padding:14px;margin-bottom:10px';
+            div.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">⏰</span><div><div style="font-size:12px;font-weight:700">' + j.name + '</div><div style="font-size:9px;color:#555">' + j.schedule + ' → ' + j.deliver + '</div></div></div><div class="tog on" onclick="this.classList.toggle("on")"></div></div><div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0"><div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">1</div><div class="flow-line"></div><div class="flow-dot" style="border-color:var(--cyan);color:var(--cyan);background:rgba(0,243,255,0.1)">2</div><div class="flow-line"></div><div class="flow-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,0.2)">⚙️</div><div class="flow-line"></div><div class="flow-dot" style="border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.1)">✓</div></div><div style="font-size:9px;color:#555;margin-top:6px">اجرای بعدی: <span style="color:var(--green);font-family:monospace">' + j.next + '</span></div>';
+            container.appendChild(div);
+        });
+    }
+    
+    function updateSystemStatus(){
+        if(!APP_DATA?.system) return;
+        const s = APP_DATA.system;
+        // Update status modal values
+        const cpuEl = document.getElementById('cpuVal');
+        const ramEl = document.getElementById('ramVal');
+        const diskEl = document.getElementById('diskVal');
+        if(cpuEl) cpuEl.textContent = s.cpu_percent || '--';
+        if(ramEl) ramEl.textContent = s.ram_percent + '%';
+        if(diskEl) diskEl.textContent = s.disk_percent + '%';
+    }
+    
+    // Auto sync every 5 minutes
+    setInterval(syncData, 300000);
+    
+    // Initial sync
+    window.addEventListener('load', () => {
+        setTimeout(syncData, 500);
+    });
+    </script>
+
 </head>
 <body>
 <div class="bg-grid"></div>
@@ -140,7 +236,7 @@
             <div class="pulse-dot"></div>
             <div><div class="hdr-title">HERMES CORE</div><div class="hdr-sub">ONLINE & READY</div></div>
         </div>
-        <div class="hdr-badge">v3.0</div>
+        <div><div class="hdr-badge" id="hdrVersion">v3.0</div><div style="font-size:8px;color:#555;margin-top:2px" id="lastSync"></div></div>
     </div>
 
     <!-- TABS -->
