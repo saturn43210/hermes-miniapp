@@ -737,7 +737,8 @@ window.addEventListener('load', ()=>{
 <div class="modal-bg" id="helpModal" onclick="if(event.target===this)this.classList.remove('show')">
     <div class="modal-box">
         <div class="modal-handle"></div>
-        <h3 style="font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:12px">📖 راهنمای کامل Hermes Agent</h3>
+        <h3 style="font-size:16px;font-weight:700;color:var(--cyan);margin-bottom:4px">📖 راهنمای کامل Hermes Agent</h3>
+        <p style="font-size:10px;color:#555;margin-bottom:12px">تمام دستورات و توضیحات کامل</p>
         <div style="font-size:10px;color:#888;margin-bottom:12px;line-height:1.8">
             هرمس یک دستیار هوش مصنوعی پیشرفته هست که می‌تونه کارهای زیادی انجام بده. در زیر لیست کامل دستورات رو می‌بینید:
         </div>
@@ -783,6 +784,27 @@ window.addEventListener('load', ()=>{
             <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/aisos run</span><span style="color:#666;font-size:9px"> — اجرای AISOS Engine</span></div>
         </div>
 
+        
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:6px">🌐 زبان و تنظیمات</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/language [fa|en]</span><br><span style="color:#666;font-size:9px">تغییر زبان مکالمه. فارسی پیش‌فرض هست.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/clear</span><br><span style="color:#666;font-size:9px">پاک کردن تاریخچه چت فعلی.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/session</span><br><span style="color:#666;font-size:9px">نمایش اطلاعات جلسه فعلی.</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">🛠️ ابزارها</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/terminal [command]</span><br><span style="color:#666;font-size:9px">اجرای دستور ترمینال.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/file [read|write] [path]</span><br><span style="color:#666;font-size:9px">خواندن یا نوشتن فایل.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/search [query]</span><br><span style="color:#666;font-size:9px">جستجو در اینترنت.</span></div>
+        </div>
+
+        <div style="margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:6px">📊 اطلاعات</div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/whoami</span><br><span style="color:#666;font-size:9px">نمایش اطلاعات کاربر.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/history</span><br><span style="color:#666;font-size:9px">تاریخچه دستورات اجرا شده.</span></div>
+            <div class="glass" style="padding:8px;margin-bottom:4px"><span style="color:var(--cyan);font-family:monospace">/stats</span><br><span style="color:#666;font-size:9px">آمار کلی استفاده.</span></div>
+        </div>
         <button class="btn btn-cyan" onclick="document.getElementById('helpModal').classList.remove('show')" style="margin-top:8px">بستن راهنما</button>
     </div>
 </div>
