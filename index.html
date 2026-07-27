@@ -617,7 +617,102 @@ function addNewSkill(){
     </div>
 </div>
 
-<!-- BOTTOM NAV -->
+
+    <!-- ═══════════ CHATS ═══════════ -->
+    <div class="pg" id="pg-chats">
+        <div class="sec"><span class="sec-icon">💬</span><span class="sec-text">مدیریت چت‌ها</span><div class="sec-line"></div></div>
+        <button class="btn btn-cyan" style="margin-bottom:12px" onclick="openModal('newChat')">+ چت جدید</button>
+        <div id="chatsList">
+            <div class="lst glass" onclick="openChatHistory('101')">
+                <div class="lst-icon" style="background:rgba(168,85,247,0.15);color:var(--purple);font-size:10px;font-weight:700">#101</div>
+                <div class="lst-text"><div class="lst-title">تحلیل پروژه هرمس</div><div class="lst-sub">Model: Mimohermes • 12 پیام</div></div>
+                <button onclick="event.stopPropagation();deleteChat('101')" style="background:none;border:none;color:var(--red);font-size:16px;padding:8px">🗑️</button>
+            </div>
+            <div class="lst glass" onclick="openChatHistory('102')">
+                <div class="lst-icon" style="background:rgba(0,243,255,0.15);color:var(--cyan);font-size:10px;font-weight:700">#102</div>
+                <div class="lst-text"><div class="lst-title">بحث AI و باگ‌بونتی</div><div class="lst-sub">Model: Mimohermes • 18 پیام</div></div>
+                <button onclick="event.stopPropagation();deleteChat('102')" style="background:none;border:none;color:var(--red);font-size:16px;padding:8px">🗑️</button>
+            </div>
+            <div class="lst glass" onclick="openChatHistory('103')">
+                <div class="lst-icon" style="background:rgba(245,166,35,0.15);color:var(--gold);font-size:10px;font-weight:700">#103</div>
+                <div class="lst-text"><div class="lst-title">طراحی Mini App</div><div class="lst-sub">Model: Mimohermes • 8 پیام</div></div>
+                <button onclick="event.stopPropagation();deleteChat('103')" style="background:none;border:none;color:var(--red);font-size:16px;padding:8px">🗑️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ CRON CREATOR ═══════════ -->
+    <div class="pg" id="pg-croncreator">
+        <div class="sec"><span class="sec-icon">➕</span><span class="sec-text">ساخت کرون‌جاب جدید</span><div class="sec-line"></div></div>
+        <div class="glass" style="padding:16px">
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام جاب</label>
+                <input type="text" id="cronNameInput" placeholder="مثلاً: اسکن روزانه آسیب‌پذیری‌ها" class="inp" style="color:var(--cyan)">
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">زمان‌بندی (Cron)</label>
+                <div style="display:flex;gap:8px">
+                    <input type="text" id="cronExprInput" placeholder="0 * * * *" class="inp" style="flex:1;color:var(--purple);font-family:monospace">
+                    <select class="sel" style="width:auto;font-size:10px" onchange="document.getElementById('cronExprInput').value=this.value">
+                        <option value="0 * * * *">هر ساعت</option>
+                        <option value="0 0 * * *">روزانه</option>
+                        <option value="*/15 * * * *">هر ۱۵ دقیقه</option>
+                        <option value="*/30 * * * *">هر ۳۰ دقیقه</option>
+                        <option value="0 9 * * *">هر روز ۹ صبح</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">Handler</label>
+                <select id="cronHandlerInput" class="sel">
+                    <option value="tools/news_fetch.py">Tech News Tracker</option>
+                    <option value="tools/sec_scan.py">Vulnerability Scanner</option>
+                    <option value="core/monitor.py">System Monitor</option>
+                    <option value="tools/aisos_engine.py">AISOS Engine</option>
+                </select>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">کانال</label>
+                <select id="cronDeliverInput" class="sel">
+                    <option value="telegram:@hermesagent219">@hermesagent219</option>
+                    <option value="origin">همین چت</option>
+                    <option value="local">فقط ذخیره</option>
+                </select>
+            </div>
+            <button class="btn btn-purple" onclick="createCronJob()">⚡ ثبت و فعال‌سازی</button>
+        </div>
+    </div>
+
+    <!-- ═══════════ SKILL BUILDER ═══════════ -->
+    <div class="pg" id="pg-skillbuilder">
+        <div class="sec"><span class="sec-icon">🧠</span><span class="sec-text">افزودن مهارت جدید</span><div class="sec-line"></div></div>
+        <div class="glass" style="padding:16px">
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">نام مهارت</label>
+                <input type="text" id="skillNameInput" placeholder="مثلاً: تحلیل احساسات متن" class="inp" style="color:var(--cyan)">
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">توضیحات</label>
+                <textarea id="skillDescInput" rows="2" placeholder="توضیح کوتاه..." class="inp" style="color:#aaa"></textarea>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">مسیر فایل</label>
+                <input type="text" id="skillPathInput" placeholder="tools/sentiment.py" class="inp" style="color:var(--purple);font-family:monospace">
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:10px;color:#888;display:block;margin-bottom:4px">روش فراخوانی</label>
+                <select id="skillTriggerInput" class="sel">
+                    <option value="On Command">دستی</option>
+                    <option value="Cron Daily">خودکار روزانه</option>
+                    <option value="Always Active">همیشه فعال</option>
+                </select>
+            </div>
+            <button class="btn btn-cyan" onclick="addNewSkill()">⚡ ذخیره مهارت</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+
 <div class="bnav">
     <div class="bnav-btn active" onclick="navTo('home',this)"><div class="bnav-icon">🏠</div><div class="bnav-lbl">خانه</div></div>
     <div class="bnav-btn" onclick="navTo('brain',this)"><div class="bnav-icon">🧠</div><div class="bnav-lbl">مهارت‌ها</div></div>
